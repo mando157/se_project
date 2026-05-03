@@ -1,0 +1,285 @@
+/* ===================== ROOT ===================== */
+:root {
+    --card-color: #19191F;
+    --text-color: #F6F2FA;
+    --text-secondary-color: #675DF9;
+    --tertiary-color: #2E2E3D;
+    --light-color: #44C3F4;
+    --border-color: #A8A4FF;
+    --hover-color: #25252C;
+    --box-color: #1C1C26;
+    --block-section-color: #12121A;
+    --overlay-color: #00000080;
+    --black-color: #000000;
+    --paragraph-color: #ACAAB1;
+    --paragraph-sharp-color: #a1a1aa;
+
+    --border-r: 15px;
+
+    --gradiant-button-color: linear-gradient(45deg, #A8A4FF, #675DF9);
+    --gradiant-btn-color: linear-gradient(45deg, #6c63ff, #3b348f);
+}
+
+/* ===================== GLOBAL ===================== */
+body {
+    background: var(--block-section-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--block-section-color);
+}
+
+.header .navbar {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 20px 40px;
+    gap: 20px;
+    width: 100%;
+    transition: 0.3s ease;
+}
+
+.header .navbar .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.header .navbar .logo h2 {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    margin: 0;
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-links a {
+    position: relative;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-links ::before,
+.header .navbar .nav-links ::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    border-radius: 5px;
+    background: var(--text-secondary-color);
+    transition: all 0.3s ease;
+}
+
+.header .navbar .nav-links ::before {
+    top: -4px;
+    right: 0;
+}
+
+.header .navbar .nav-links ::after {
+    bottom: -8px;
+    left: 0;
+}
+
+.header .navbar .nav-links :hover ::before,
+.header .navbar .nav-links :hover ::after {
+    width: 100%;
+}
+
+.header .navbar .nav-links .active {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links :hover {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    width: 250px;
+}
+
+.header .navbar .nav-btn svg.svg-inline--fa.fa-bell {
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-btn svg:hover.svg-inline--fa.fa-bell {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-btn .header-image {
+    width: 48px;
+    height: 37px;
+}
+
+/* ===================== HEAD ===================== */
+.title {
+    font-size: 42px;
+    font-weight: 800;
+}
+
+.sub {
+    color: var(--paragraph-color);
+}
+
+/* ===================== NOTIFICATION ===================== */
+.notification {
+    display: flex;
+    gap: 18px;
+    padding: 22px;
+    background: var(--card-color);
+    border-radius: var(--border-r);
+    margin-bottom: 20px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.notification:hover {
+    background: var(--hover-color);
+    transform: translateY(-3px);
+}
+
+/* Line */
+.notification .line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* Types */
+.notification.danger .line {
+    background: #ff4d6d;
+}
+
+.notification.warning .line {
+    background: #ffb020;
+}
+
+.notification.success .line {
+    background: #4caf50;
+}
+
+/* Icon */
+.icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--box-color);
+    font-size: 20px;
+}
+
+/* Content */
+.notification .content h5 {
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.notification .content p {
+    color: var(--paragraph-color);
+    margin: 0;
+}
+
+/* Buttons */
+.actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.actions .btn {
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+/* Time */
+.time {
+    margin-left: auto;
+    color: var(--paragraph-sharp-color);
+    font-size: 13px;
+}
+
+/* ===================== SESSION CARD ===================== */
+.session-card {
+    background: var(--gradiant-button-color);
+    padding: 25px;
+    border-radius: var(--border-r);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.session-card::after {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    bottom: -50px;
+    right: -50px;
+    border-radius: 50%;
+    filter: blur(50px);
+}
+
+/* Timer */
+.timer {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 15px 0;
+}
+
+/* ===================== SUMMARY ===================== */
+.summary {
+    background: var(--card-color);
+    padding: 20px;
+    border-radius: var(--border-r);
+}
+
+.summary h5 {
+    margin-bottom: 15px;
+}
+
+/* Progress override */
+.progress {
+    height: 6px;
+    background: var(--tertiary-color);
+    border-radius: 20px;
+}
+
+.progress-bar {
+    background: var(--light-color);
+}

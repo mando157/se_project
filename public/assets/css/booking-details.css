@@ -1,0 +1,269 @@
+/* ========== VARIABLES (Design System) ========== */
+:root {
+    --card-color: #19191F;
+    --text-color: #F6F2FA;
+    --text-secondary-color: #675DF9;
+    --tertiary-color: #2E2E3D;
+    --light-color: #44C3F4;
+    --border-color: #A8A4FF;
+    --hover-color: #25252C;
+    --box-color: #1C1C26;
+    --block-section-color: #12121A;
+    --overlay-color: #00000080;
+    --black-color: #000000;
+    --paragraph-color: #ACAAB1;
+    --paragraph-sharp-color: #a1a1aa;
+
+
+    --border-r: 15px;
+
+    --gradiant-button-color: linear-gradient(45deg, #A8A4FF, #675DF9);
+
+    /* Unified System */
+    --bg-main: var(--black-color);
+    --bg-card: var(--card-color);
+    --bg-hover: var(--hover-color);
+    --bg-section: var(--block-section-color);
+
+    --text-main: var(--text-color);
+    --text-muted: var(--paragraph-color);
+
+    --primary: var(--border-color);
+    --secondary: var(--light-color);
+
+    --border: var(--border-color);
+
+    --radius: var(--border-r);
+    --transition: 0.3s;
+
+    --gradient: var(--gradiant-button-color);
+
+
+}
+
+/* ========== GLOBAL ========== */
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* ========== NAVBAR ========== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--black-color);
+}
+
+.header .navbar {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 20px 40px;
+    margin-left: 40px;
+    gap: 20px;
+    width: 100%;
+    transition: 0.3s ease;
+}
+
+.header .navbar .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.header .navbar .logo h2 {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    margin: 0;
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-links a {
+    position: relative;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-links ::before,
+.header .navbar .nav-links ::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    border-radius: 5px;
+    background: var(--text-secondary-color);
+    transition: all 0.3s ease;
+}
+
+.header .navbar .nav-links ::before {
+    top: -4px;
+    right: 0;
+}
+
+.header .navbar .nav-links ::after {
+    bottom: -8px;
+    left: 0;
+}
+
+.header .navbar .nav-links :hover ::before,
+.header .navbar .nav-links :hover ::after {
+    width: 100%;
+}
+
+.header .navbar .nav-links .active {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links :hover {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    width: 250px;
+}
+
+.header .navbar .nav-btn svg.svg-inline--fa.fa-bell {
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-btn svg:hover.svg-inline--fa.fa-bell {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-btn .header-image {
+    width: 48px;
+    height: 37px;
+}
+
+/* ========== MAIN ========== */
+.main {
+    padding: 30px;
+}
+
+/* LEFT */
+.left h1 {
+    font-weight: bold;
+}
+
+.sub {
+    color: var(--text-muted);
+}
+
+.back {
+    cursor: pointer;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+/* IMAGE */
+.main-img img {
+    width: 100%;
+    border-radius: var(--radius);
+    margin: 20px 0;
+}
+
+/* FEATURES */
+.features {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.features div {
+    background: var(--bg-card);
+    padding: 10px 15px;
+    border-radius: var(--radius);
+    color: var(--text-muted);
+}
+
+/* ========== RIGHT CARD ========== */
+.card-box {
+    background: var(--bg-card);
+    padding: 25px;
+    margin: 20px 0;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.card-box:hover {
+    border: 1px solid var(--border);
+}
+
+/* INPUT */
+.card-box input {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: var(--bg-hover);
+    color: var(--text-main);
+    outline: none;
+}
+
+.card-box input:focus {
+    border: 1px solid var(--primary);
+}
+
+/* PRICE */
+.price-box {
+    margin-top: 15px;
+}
+
+.price-box p {
+    color: var(--text-muted);
+}
+
+.price-box h2 {
+    color: var(--primary);
+}
+
+/* BUTTON */
+.confirm-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--gradient);
+    color: black;
+    font-weight: bold;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.confirm-btn:hover {
+    opacity: 0.85;
+}

@@ -1,0 +1,337 @@
+:root {
+    --card-color: #19191F;
+    --text-color: #F6F2FA;
+    --text-secondary-color: #675DF9;
+    --tertiary-color: #2E2E3D;
+    --light-color: #44C3F4;
+    --border-color: #A8A4FF;
+    --hover-color: #25252C;
+    --box-color: #1C1C26;
+    --block-section-color: #12121A;
+    --overlay-color: #00000080;
+    --black-color: #000000;
+    --paragraph-color: #ACAAB1;
+    --paragraph-sharp-color: #a1a1aa;
+
+    --border-r: 15px;
+
+    --gradiant-button-color: linear-gradient(45deg, #A8A4FF, #675DF9);
+    --gradiant-btn-color: linear-gradient(45deg, #6c63ff, #3b348f);
+
+    --bg-main: var(--black-color);
+    --bg-card: var(--card-color);
+    --bg-hover: var(--hover-color);
+    --bg-section: var(--block-section-color);
+
+    --text-main: var(--text-color);
+    --text-muted: var(--paragraph-color);
+
+    --primary: var(--border-color);
+    --primary-dark: var(--text-secondary-color);
+    --secondary: var(--light-color);
+
+    --border: var(--border-color);
+
+    --radius: var(--border-r);
+    --transition: all 0.3s ease;
+
+    --gradient: var(--gradiant-button-color);
+}
+
+/* ================= GLOBAL ================= */
+body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--black-color);
+}
+
+.header .navbar {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 20px 40px;
+    margin-left: 40px;
+    gap: 20px;
+    width: 100%;
+    transition: 0.3s ease;
+}
+
+.header .navbar .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.header .navbar .logo h2 {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    margin: 0;
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-links a {
+    position: relative;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-links ::before,
+.header .navbar .nav-links ::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    border-radius: 5px;
+    background: var(--text-secondary-color);
+    transition: all 0.3s ease;
+}
+
+.header .navbar .nav-links ::before {
+    top: -4px;
+    right: 0;
+}
+
+.header .navbar .nav-links ::after {
+    bottom: -8px;
+    left: 0;
+}
+
+.header .navbar .nav-links :hover ::before,
+.header .navbar .nav-links :hover ::after {
+    width: 100%;
+}
+
+.header .navbar .nav-links .active {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links :hover {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    width: 250px;
+}
+
+.header .navbar .nav-btn svg.svg-inline--fa.fa-bell {
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-btn svg:hover.svg-inline--fa.fa-bell {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-btn .header-image {
+    width: 48px;
+    height: 37px;
+}
+
+
+/* ================= MAIN ================= */
+.main {
+    display: flex;
+    height: calc(100vh - 72px);
+}
+
+/* ================= LEFT ================= */
+.left {
+    width: 360px;
+    padding: 25px;
+    overflow: hidden;
+}
+
+/* Search */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.search-box:hover {
+    border: 1px solid var(--primary);
+}
+
+.search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: white;
+    margin-left: 10px;
+    width: 100%;
+}
+
+/* Filters */
+.filters {
+    margin: 15px 0;
+}
+
+.filters button {
+    background: var(--bg-card);
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-right: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filters button:hover {
+    background: var(--bg-hover);
+    color: var(--text-color);
+}
+
+.filters .active {
+    background: var(--gradient);
+    color: black;
+}
+
+/* Title */
+.title {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+/* Cards */
+.cards {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    gap: 12px;
+    max-height: 350px;
+    overflow-y: auto; 
+}
+.cards::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cards::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 10px;
+}
+.card {
+    background: var(--bg-card);
+    padding: 16px;
+    border-radius: var(--radius);
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.card:hover {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    transform: translateY(-3px);
+}
+
+/* Top */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-top p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+/* Price */
+.price h4 {
+    color: var(--secondary);
+    margin: 0;
+
+    span{
+        color: var(--text-color);
+    }
+}
+
+/* Bottom */
+.card-bottom {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-bottom span {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Buttons */
+.primary {
+    background: var(--bg-section);
+    border: none;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.primary:hover {
+    transform: scale(1.02);
+}
+.primary {
+    background: var(--gradient);
+    color: black;
+}
+
+/* ================= MAP ================= */
+.right {
+    flex: 1;
+    position: relative;
+    background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Overlay */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, var(--bg-main), transparent);
+}

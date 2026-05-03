@@ -1,0 +1,28 @@
+$card-color : #19191F;
+$text-color : #F6F2FA;
+$text-secondary-color : #675DF9;
+$tertiary-color : #2E2E3D;
+$light-color : #44C3F4;
+$border-color : #A8A4FF;
+$hover-color : #25252C;
+$box-color : #1C1C26;
+$block-section-color : #12121A;
+$overlay-color : #00000080;
+$input-border : #48474D;
+$black-color : #000000;
+$paragraph-color : #ACAAB1;
+$paragraph-sharp-color : #a1a1aa;
+
+$border-r : 15px;
+
+$gradiant-button-color : linear-gradient(45deg, #A8A4FF, #675DF9);
+$gradiant-btn-color : linear-gradient(45deg, #6c63ff, #3b348f);
+
+@mixin flex($js : center, $ai : center, $fd : row, $gap : 0) {
+    display: flex;
+    justify-content: $js;
+    align-items: $ai;
+    flex-direction: $fd;
+    gap: $gap;
+}
+

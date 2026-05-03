@@ -1,0 +1,184 @@
+body {
+  background: url(../images/Background\ Image\ with\ Overlay.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.sign-up {
+  background-color: #19191F;
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  width: 550px;
+  height: -moz-fit-content;
+  height: fit-content;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #F6F2FA;
+}
+.sign-up .header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+.sign-up .header h2 {
+  margin: 0;
+}
+.sign-up .header h2 span {
+  color: #675DF9;
+}
+.sign-up .header .error-massage {
+  padding: 12px;
+  background-color: #000000;
+  color: #F6F2FA;
+  font-size: 16px;
+  text-align: center;
+  margin: 20px 0;
+  border-radius: 6px;
+}
+.sign-up .header p {
+  color: #ACAAB1;
+  width: 300px;
+  font-size: 12px;
+  margin: 10px;
+}
+.sign-up .header .header-image {
+  width: 48px;
+  height: 37px;
+}
+.sign-up form label {
+  color: #ACAAB1;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-size: 12px;
+  margin: 0px 5px 5px 5px;
+}
+.sign-up form .role-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+}
+.sign-up form .role-box .role-card {
+  cursor: pointer;
+  width: 48%;
+}
+.sign-up form .role-box .role-card input {
+  display: none;
+}
+.sign-up form .role-box .role-card .btn-1,
+.sign-up form .role-box .role-card .btn-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 15px;
+  width: 100%;
+  background: #1C1C26;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  transition: 0.3s ease;
+  padding: 10px;
+}
+.sign-up form .role-box .role-card .btn-1 img,
+.sign-up form .role-box .role-card .btn-2 img {
+  margin: 0 5px;
+  width: 35px;
+  background: #25252C;
+  padding: 5px;
+  border-radius: 5px;
+}
+.sign-up form .role-box .role-card .btn-1 .btn-content,
+.sign-up form .role-box .role-card .btn-2 .btn-content {
+  height: -moz-fit-content;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+}
+.sign-up form .role-box .role-card .btn-1 .btn-content h2,
+.sign-up form .role-box .role-card .btn-2 .btn-content h2 {
+  font-weight: 600;
+  font-size: 12px;
+  color: #F6F2FA;
+  margin-top: 3px;
+}
+.sign-up form .role-box .role-card .btn-1 .btn-content p,
+.sign-up form .role-box .role-card .btn-2 .btn-content p {
+  font-size: 10px;
+  color: #ACAAB1;
+  margin-bottom: 3px;
+}
+.sign-up form .role-box .role-card .btn-1:hover,
+.sign-up form .role-box .role-card .btn-2:hover {
+  border: 1px solid #A8A4FF;
+  background: #25252C;
+}
+.sign-up form .role-box .role-card input:checked + .btn-1,
+.sign-up form .role-box .role-card input:checked + .btn-2 {
+  border: 1px solid #A8A4FF;
+  background: #25252C;
+  transform: scale(1.03);
+}
+.sign-up form .input-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  gap: 15px;
+}
+.sign-up form .input-box .input-box-1,
+.sign-up form .input-box .input-box-2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sign-up form .input-box .input-box-1 input,
+.sign-up form .input-box .input-box-2 input {
+  margin-bottom: 15px;
+  border: 1px solid transparent;
+  background: #25252C;
+  border-radius: 15px;
+  height: 38px;
+  padding: 0 5px;
+}
+.sign-up form .submit {
+  width: 100%;
+  height: 38px;
+  background: linear-gradient(45deg, #A8A4FF, #675DF9);
+  border-radius: 15px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+.sign-up form .submit:hover {
+  transform: scale(1.02);
+}
+.sign-up form .login-link {
+  font-size: 14px;
+  margin: 5px;
+}
+.sign-up form .login-link a {
+  text-decoration: none;
+  color: #675DF9;
+}
+.sign-up form .footer-text {
+  margin-top: 30px;
+  margin-bottom: 0;
+  font-size: 12px;
+  color: #ACAAB1;
+}/*# sourceMappingURL=style.css.map */

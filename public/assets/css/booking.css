@@ -1,0 +1,308 @@
+/* ================= ROOT VARIABLES ================= */
+:root {
+  --card-color: #19191F;
+  --text-color: #F6F2FA;
+  --text-secondary-color: #675DF9;
+  --tertiary-color: #2E2E3D;
+  --light-color: #44C3F4;
+  --border-color: #A8A4FF;
+  --hover-color: #25252C;
+  --box-color: #1C1C26;
+  --block-section-color: #12121A;
+  --overlay-color: #00000080;
+  --paragraph-color: #ACAAB1;
+
+  --border-r: 15px;
+
+  --gradiant-button-color: linear-gradient(45deg, #A8A4FF, #675DF9);
+}
+
+/* ================= BODY ================= */
+body {
+    background: var(--block-section-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+}
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--block-section-color);
+}
+
+.header .navbar {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 20px 40px;
+    gap: 20px;
+    width: 100%;
+    transition: 0.3s ease;
+}
+
+.header .navbar .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.header .navbar .logo h2 {
+    margin: 0;
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    margin: 0;
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-links a {
+    position: relative;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-links ::before,
+.header .navbar .nav-links ::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    border-radius: 5px;
+    background: var(--text-secondary-color);
+    transition: all 0.3s ease;
+}
+
+.header .navbar .nav-links ::before {
+    top: -4px;
+    right: 0;
+}
+
+.header .navbar .nav-links ::after {
+    bottom: -8px;
+    left: 0;
+}
+
+.header .navbar .nav-links :hover ::before,
+.header .navbar .nav-links :hover ::after {
+    width: 100%;
+}
+
+.header .navbar .nav-links .active {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links :hover {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-links li {
+    list-style: none;
+}
+
+.header .navbar .nav-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+    width: 250px;
+}
+
+.header .navbar .nav-btn svg.svg-inline--fa.fa-bell {
+    color: var(--text-color);
+    transition: 0.3s ease;
+}
+
+.header .navbar .nav-btn svg:hover.svg-inline--fa.fa-bell {
+    color: var(--text-secondary-color);
+}
+
+.header .navbar .nav-btn .header-image {
+    width: 48px;
+    height: 37px;
+}
+
+/* ================= PAGE HEAD ================= */
+.page-head h1 {
+    font-size: 42px;
+    font-weight: 800;
+}
+
+.page-head p {
+    color: var(--paragraph-color);
+}
+
+/* ================= FILTERS ================= */
+.filters {
+    margin: 30px 0;
+}
+
+.filters button {
+    background: var(--box-color);
+    border: none;
+    color: var(--text-color);
+    padding: 10px 18px;
+    border-radius: 25px;
+    margin-right: 10px;
+    transition: 0.3s;
+}
+
+.filters button.active {
+    background: var(--text-secondary-color);
+}
+
+.filters button:hover {
+    background: var(--hover-color);
+}
+
+/* ================= MAIN CARD ================= */
+.booking-card {
+    display: flex;
+    background: var(--card-color);
+    border-radius: var(--border-r);
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.card-img {
+    width: 300px;
+    position: relative;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--text-secondary-color);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.card-body {
+    flex: 1;
+    padding: 25px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+}
+
+.location {
+    color: var(--paragraph-color);
+}
+
+.price h2 {
+    color: var(--border-color);
+}
+
+.price span {
+    font-size: 12px;
+    color: var(--paragraph-color);
+}
+
+.grid-info {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.grid-info small {
+    color: var(--paragraph-color);
+}
+
+.highlight {
+    color: var(--light-color);
+}
+
+/* ================= BUTTONS ================= */
+.actions button {
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    background: var(--gradiant-button-color);
+    color: white;
+}
+
+.btn-dark {
+    background: var(--hover-color);
+    color: white;
+}
+
+/* ================= SIMPLE CARDS ================= */
+.booking-simple {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--box-color);
+    padding: 20px;
+    border-radius: var(--border-r);
+    margin-bottom: 15px;
+    transition: 0.3s;
+}
+
+.booking-simple:hover {
+    background: var(--hover-color);
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.status.completed {
+    background: var(--tertiary-color);
+}
+
+.status.cancelled {
+    background: rgba(255,120,144,0.2);
+    color: #ff7890;
+}
+
+.cancelled {
+    opacity: 0.6;
+}
+
+.line {
+    text-decoration: line-through;
+    color: var(--paragraph-color);
+}
+
+/* ================= REBOOK ================= */
+.rebook {
+    background: var(--hover-color);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
