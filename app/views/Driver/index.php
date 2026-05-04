@@ -25,7 +25,7 @@
 
             <ul class="nav-links">
                 <li><a href="<?= BASE_URL ?>Driver" class="active">Live Map</a></li>
-                <li><a href="<?= BASE_URL ?>Map">Find Parking</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/map">Find Parking</a></li>
                 <li><a href="<?= BASE_URL ?>Booking">My Bookings</a></li>
                 <li><a href="<?= BASE_URL ?>Support">Support</a></li>
             </ul>
@@ -69,7 +69,7 @@
             <div class="section-content grid row ">
                 <div class="map col-lg-8" style="background: url(<?= BASE_URL ?>assets/images/map.png);">
                     <div class="pop-up">
-                        <a href="<?= BASE_URL ?>Map">
+                        <a href="<?= BASE_URL ?>Driver/map">
                             park flow <i class="fa-solid fa-arrow-right-long"></i>
                         </a>
                     </div>

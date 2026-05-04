@@ -12,7 +12,7 @@ class App
 
         // Controller
         if (!empty($url[0])) {
-            $controllerName = ucfirst($url[0]) . "Controller";
+            $controllerName = ucfirst(strtolower($url[0])) . "Controller";
             $controllerPath = "../app/controllers/" . $controllerName . ".php";
 
             if (file_exists($controllerPath)) {

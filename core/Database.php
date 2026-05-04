@@ -12,7 +12,7 @@ class Database
 
 
     // Private constructor → prevent direct creation
-    private function __construct()
+    public function __construct()
     {
         $this->conn = new mysqli(
             $this->host,
