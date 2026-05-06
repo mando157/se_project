@@ -1,14 +1,3 @@
-<?php
-include("/config/db.php");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$sql = "SELECT * FROM notifications ORDER BY created_at DESC";
-$result = $conn->query($sql);
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,7 +16,7 @@ $result = $conn->query($sql);
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <link rel="stylesheet" href="./assets/css/notify.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/notify.css">
 </head>
 
 <body>
@@ -39,9 +28,9 @@ $result = $conn->query($sql);
                 <h2>ParkFlow</h2>
             </div>
             <ul class="nav-links">
-                <li><a href="./Driver.php">Find Parking</a></li>
-                <li><a href="./booking.html">My Bookings</a></li>
-                <li><a href="#" class="active">Notifications</a></li>
+                <li><a href="<?= BASE_URL ?>Driver" class="active">Find Parking</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/notify">Notifications</a></li>
             </ul>
         </nav>
     </section>
@@ -135,7 +124,7 @@ $result = $conn->query($sql);
 
             </div>
         </div>
-        <script src="./assets/js/notify.js"></script>
+        <script src="<?= BASE_URL ?>assets/js/notify.js"></script>
 </body>
 
 </html>

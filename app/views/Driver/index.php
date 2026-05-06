@@ -26,13 +26,13 @@
             <ul class="nav-links">
                 <li><a href="<?= BASE_URL ?>Driver" class="active">Live Map</a></li>
                 <li><a href="<?= BASE_URL ?>Driver/map">Find Parking</a></li>
-                <li><a href="<?= BASE_URL ?>Booking">My Bookings</a></li>
-                <li><a href="<?= BASE_URL ?>Support">Support</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/support">Support</a></li>
             </ul>
 
             <div class="nav-btn">
-                <a href="<?= BASE_URL ?>Notify" class="notification-bell"><i class="fa-regular fa-bell"></i></a>
-                <a href="<?= BASE_URL ?>Profile" class="profile"><img src="<?= BASE_URL ?>assets/images/Account.png"
+                <a href="<?= BASE_URL ?>Driver/notify" class="notification-bell"><i class="fa-regular fa-bell"></i></a>
+                <a href="<?= BASE_URL ?>Driver/profile" class="profile"><img src="<?= BASE_URL ?>assets/images/Account.png"
                         alt=""></a>
                 <a href="<?= BASE_URL ?>Auth/logout" class="logout-btn">Logout</a>
             </div>

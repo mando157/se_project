@@ -1,16 +1,3 @@
-<?php
-include("config/db.php");
-
-$user_id = 1;
-
-$sql = "SELECT b.*, p.spot_name 
-        FROM bookings b
-        JOIN parking_spots p ON b.spot_id = p.spot_id
-        WHERE b.user_id = $user_id";
-
-$result = mysqli_query($conn, $sql);
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,9 +5,9 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css/all.min.css">
-    <link rel="stylesheet" href="./assets/css/booking.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/booking.css">
 
     <title>My Bookings</title>
 </head>
@@ -33,10 +20,10 @@ $result = mysqli_query($conn, $sql);
             <h2>ParkFlow</h2>
         </div>
         <ul class="nav-links">
-            <li><a href="./Driver.php">live Map</a></li>
-            <li><a href="./map.php">Find Parking</a></li>
-            <li><a href="./booking.php" class="active">My Bookings</a></li>
-            <li><a href="./notify.html">Notifications</a></li>
+            <li><a href="<?= BASE_URL ?>Driver" class="active">live Map</a></li>
+            <li><a href="<?= BASE_URL ?>Driver/map">Find Parking</a></li>
+            <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+            <li><a href="<?= BASE_URL ?>Driver/notify">Notifications</a></li>
         </ul>
     </nav>
 </section>
@@ -61,7 +48,7 @@ $result = mysqli_query($conn, $sql);
     <div class="booking-card">
 
         <div class="card-img">
-            <img src="./assets/images/login-bg.jpg">
+            <img src="<?= BASE_URL ?>assets/images/login-bg.jpg">
             <span class="badge"><?php echo strtoupper($row['status']); ?></span>
         </div>
 

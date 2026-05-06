@@ -56,7 +56,6 @@ body {
 .container {
     display: flex;
     gap: 60px;
-    padding: 40px 80px;
 }
 
 .left {
@@ -108,7 +107,7 @@ body {
     padding: 25px;
     border-radius: 14px;
     border: 2px solid transparent;
-    width: 260px;
+    width: 300px;
     transition: .3s;
 }
 
@@ -139,7 +138,7 @@ body {
 }
 
 .form input {
-    width: 93%;
+    width: 100%;
     padding: 15px;
     padding-left: 30px;
     margin: 10px 0 20px;
@@ -147,6 +146,7 @@ body {
     border: none;
     border-radius: 10px;
     color: white;
+    box-sizing: border-box;
 }
 
 .input-icon {
@@ -161,10 +161,18 @@ body {
     color: var(--muted);
 }
 
-.row {
-    width: 50%;
+.pay-row {
+    width: 100%;
     display: flex;
     gap: 50px;
+}
+
+.row-1 {
+    width: 50%;
+}
+
+.row-2 {
+    width: 50%;
 }
 
 .checkbox {
@@ -188,6 +196,7 @@ body {
 .pay-btn:hover {
     transform: scale(1.02);
 }
+
 .secure {
     margin-top: 15px;
     text-align: center;
@@ -203,6 +212,7 @@ body {
 
 .map {
     height: 150px;
+    color: white;
     background: linear-gradient(#1f1f26, #0e0e13);
     background-repeat: no-repeat;
     background-size: cover;
@@ -217,6 +227,7 @@ body {
 }
 
 .info {
+    color: var(--muted);
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
@@ -230,6 +241,7 @@ body {
 }
 
 .total {
+    color: var(--text);
     margin-top: 20px;
     display: flex;
     justify-content: space-between;

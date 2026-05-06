@@ -1,45 +1,12 @@
-<?php
-include("/config/db.php");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$booking_id = intval($_GET['booking_id']);
-
-$sql = "SELECT * FROM bookings WHERE booking_id = $booking_id";
-$result = $conn->query($sql);
-$booking = $result->fetch_assoc();
-
-$spot_id = $booking['spot_id'];
-
-$sql2 = "SELECT * FROM parking_spots WHERE spot_id = $spot_id";
-$result2 = $conn->query($sql2);
-$spot = $result2->fetch_assoc();
-?>
-<?php
-if (isset($_POST['pay'])) {
-
-    $sql = "UPDATE bookings 
-            SET status='paid' 
-            WHERE booking_id=$booking_id";
-
-    if ($conn->query($sql)) {
-        echo "<script>alert('Payment Successful');</script>";
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>UrbanKinetic Checkout</title>
-    <link rel="stylesheet" href="./assets/css/payment.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/payment.css?v=1">
 </head>
 
 <body>
@@ -49,7 +16,7 @@ if (isset($_POST['pay'])) {
             <span class="divider"></span>
             <span class="sub">Secure Checkout</span>
         </div>
-        <a href="./booking-details.html" class="back"><i class="fa fa-arrow-left"></i> Cancel Booking</a>
+        <a href="<?= BASE_URL ?>Driver/bookingDetails" class="back"><i class="fa fa-arrow-left"></i> Cancel Booking</a>
     </header>
     <main class="container">
 
@@ -91,7 +58,7 @@ if (isset($_POST['pay'])) {
             </div>
 
             <!-- ===== CARD FORM ===== -->
-            <form class="form glass" id="cardForm">
+            <form class="form glass" id="cardForm" action="<?= BASE_URL ?>Driver/bookings" method="POST">
 
                 <label>Cardholder Name</label>
                 <input id="name" required>
@@ -102,12 +69,12 @@ if (isset($_POST['pay'])) {
                     <input id="number" placeholder="**** **** **** ****" required>
                 </div>
 
-                <div class="row">
-                    <div>
+                <div class="pay-row">
+                    <div class="row-1">
                         <label>Expiry</label>
                         <input id="expiry" placeholder="MM / YY" required>
                     </div>
-                    <div>
+                    <div class="row-2">
                         <label>CVV</label>
                         <input id="cvv" placeholder="***" type="text" required>
                     </div>
@@ -135,8 +102,8 @@ if (isset($_POST['pay'])) {
             <div class="card">
 
                 <!-- ===== MAP ===== -->
-                <div class="map" style="background: url(./assets/images/District-photo.png);">
-                    <span id="location"><?= $spot['name']; ?></span>
+                <div class="map" style="background: url(<?= BASE_URL ?>/assets/images/District-photo.png);">
+                    <span id="location"><?= $name; ?></span>
                 </div>
 
                 <div class="content">
@@ -144,7 +111,7 @@ if (isset($_POST['pay'])) {
                     <!-- ===== INFO ===== -->
                     <div class="info">
                         <span>Parking Level</span>
-                        <b id="level"><?= $spot['level']; ?></b>
+                        <b id="level"><?= $level ?></b>
                     </div>
 
                     <div class="info">
@@ -156,7 +123,7 @@ if (isset($_POST['pay'])) {
 
                     <!-- ===== PRICES (DYNAMIC) ===== -->
                     <div class="price">
-                        <span>Base Rate</span>
+                        <span>Price /hr</span>
                         <span id="base">$0</span>
                     </div>
                     <div class="price">
@@ -190,7 +157,15 @@ if (isset($_POST['pay'])) {
         </aside>
 
     </main>
-    <script src="./assets/js/payment.js"></script>
+    <script>
+        const booking = {
+            price_per_hour: <?= floatval($booking['price_per_hour']) ?>,
+            hours: <?= intval($booking['duration']) ?>,
+            surcharge: 0,
+            service: 0
+        };
+    </script>
+    <script src="<?= BASE_URL ?>/assets/js/pay.js"></script>
 </body>
 
 </html>

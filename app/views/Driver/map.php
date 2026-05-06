@@ -72,7 +72,7 @@
               <div class="card-bottom">
                 <span>Available Spots</span>
 
-                <a class="primary" href="<?= BASE_URL ?>Driver/bookingDetails?spot_id=<?= $row['spot_id']; ?>">
+                <a class="primary" href="<?= BASE_URL ?>Driver/bookingDetails<?= $row['spot_id'] ?>">
                   Book Now
                 </a>
               </div>

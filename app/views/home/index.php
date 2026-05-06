@@ -17,23 +17,13 @@
 
     <!--* Header Section -->
     <section class="header" id="header">
-        <nav class="navbar">
-            <div class="logo">
+        <nav class="navbar" style="justify-content: space-between;">
+            <div class="logo" style="padding-left: 100px;">
                 <img src="<?= BASE_URL ?>assets/images/Logo.png" alt="UrbanKinetic Logo">
                 <h2>UrbanKinetic</h2>
             </div>
-
-            <ul class="nav-links">
-                <li><a href="<?= BASE_URL ?>Driver" class="active">Live Map</a></li>
-                <li><a href="<?= BASE_URL ?>Map">Find Parking</a></li>
-                <li><a href="<?= BASE_URL ?>Booking">My Bookings</a></li>
-                <li><a href="<?= BASE_URL ?>Support">Support</a></li>
-            </ul>
-
             <div class="nav-btn">
                 <a href="<?= BASE_URL ?>Notify" class="notification-bell"><i class="fa-regular fa-bell"></i></a>
-                <a href="<?= BASE_URL ?>Profile" class="profile"><img src="<?= BASE_URL ?>assets/images/Account.png"
-                        alt=""></a>
                 <a href="<?= BASE_URL ?>Auth/login" class="logout-btn">Login</a>
             </div>
         </nav>
@@ -44,7 +34,7 @@
             <div class="light-1"></div>
             <div class="light-2"></div>
 
-            <h2>Urban Flow Design System</h2>
+            <h2>Urban Parking Flow System</h2>
             <h1 class="title">
                 Find Parking Easily
                 <span class="active">in Your City</span>
@@ -54,7 +44,7 @@
                 network.</p>
             <div class="landing-btn">
                 <a href="<?= BASE_URL ?>Auth/login" class="btn active-btn">Get Started</a>
-                <a href="#" class="btn learn-more-btn">Learn More</a>
+                <a href="<?= BASE_URL ?>Auth/login" class="btn learn-more-btn">Learn More</a>
             </div>
         </div>
     </section>
