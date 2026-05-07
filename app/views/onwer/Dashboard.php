@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         /* CSS Variables */
         :root {
@@ -79,7 +80,8 @@
             text-decoration: none;
         }
 
-        .nav-item.active, .nav-item:hover {
+        .nav-item.active,
+        .nav-item:hover {
             background: rgba(56, 189, 248, 0.1);
             color: var(--accent-blue);
         }
@@ -106,7 +108,7 @@
             align-items: center;
             gap: 12px;
             width: 320px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .search-bar input {
@@ -133,8 +135,8 @@
             gap: 2.5rem;
             align-items: center;
             max-width: 950px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -212,12 +214,17 @@
             height: 26px;
         }
 
-        .switch input { display: none; }
+        .switch input {
+            display: none;
+        }
 
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background-color: #334155;
             transition: .4s;
             border-radius: 34px;
@@ -226,22 +233,31 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px; width: 18px;
-            left: 4px; bottom: 4px;
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
 
-        input:checked + .slider { background-color: var(--accent-green); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        input:checked+.slider {
+            background-color: var(--accent-green);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
 
         /* --- Modal Window --- */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(2, 6, 23, 0.85);
             backdrop-filter: blur(8px);
             z-index: 2000;
@@ -256,7 +272,7 @@
             width: 450px;
             text-align: center;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .close-btn {
@@ -270,15 +286,36 @@
 
         /* Responsive Design */
         @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-content { margin-left: 0; width: 100%; }
-            .card { flex-direction: column; text-align: center; }
-            .card-img { width: 100%; height: 220px; }
-            .tags { justify-content: center; }
-            .control-panel { justify-content: center; }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card-img {
+                width: 100%;
+                height: 220px;
+            }
+
+            .tags {
+                justify-content: center;
+            }
+
+            .control-panel {
+                justify-content: center;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar Navigation -->
@@ -319,7 +356,8 @@
         <div class="dashboard-grid">
             <!-- Card 1 -->
             <div class="card">
-                <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800" alt="CBD Area" class="card-img">
+                <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800"
+                    alt="CBD Area" class="card-img">
                 <div class="card-info">
                     <div class="space-id">#102</div>
                     <h3>Central Business District</h3>
@@ -340,7 +378,8 @@
 
             <!-- Card 2 -->
             <div class="card">
-                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800" alt="Residential Zone" class="card-img">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800"
+                    alt="Residential Zone" class="card-img">
                 <div class="card-info">
                     <div class="space-id">#085</div>
                     <h3>North Residential Zone</h3>
@@ -367,7 +406,7 @@
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle">Area Analytics</h2>
             <p style="margin: 1.5rem 0; color: var(--text-dim); line-height: 1.6;">
-                Accessing live telemetry from <strong id="zoneName" style="color: var(--accent-blue);"></strong>. 
+                Accessing live telemetry from <strong id="zoneName" style="color: var(--accent-blue);"></strong>.
                 Data includes power consumption, pedestrian density, and air quality metrics.
             </p>
             <button class="action-btn" onclick="closeModal()" style="width: 100%;">Close Terminal</button>
@@ -397,7 +436,7 @@
         }
 
         // Close on Outside Click
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target == modal) {
                 closeModal();
             }
@@ -405,11 +444,12 @@
 
         // Sensor Toggle Notification
         document.querySelectorAll('.switch input').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
+            checkbox.addEventListener('change', function () {
                 const status = this.checked ? "ON" : "OFF";
                 console.log(`System Status: ${status}`);
             });
         });
     </script>
 </body>
+
 </html>

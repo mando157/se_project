@@ -42,7 +42,8 @@
 
         .f4 {
             color: #aaa !important;
-            margin-right: 20px !important; /* تعديل المسافة لتكون منطقية */
+            margin-right: 20px !important;
+            /* تعديل المسافة لتكون منطقية */
         }
 
         .f4.f15 {
@@ -77,8 +78,15 @@
             border: 1px solid #334155;
         }
 
-        h2, h3, h5 { color: #ffffff; }
-        p { color: #94a3b8; }
+        h2,
+        h3,
+        h5 {
+            color: #ffffff;
+        }
+
+        p {
+            color: #94a3b8;
+        }
 
         .notif {
             background: #0f172a;
@@ -167,7 +175,9 @@
             z-index: 1100;
         }
 
-        .sidebar.hide { transform: translateX(-100%); }
+        .sidebar.hide {
+            transform: translateX(-100%);
+        }
 
         .sidebar-top {
             display: flex;
@@ -187,7 +197,10 @@
             color: #ffffff;
         }
 
-        .sidebar-title i { color: #7c5cff; text-shadow: 0 0 10px rgba(124, 92, 255, 0.5); }
+        .sidebar-title i {
+            color: #7c5cff;
+            text-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+        }
 
         .sidebar a {
             display: flex;
@@ -202,7 +215,8 @@
             transition: 0.2s;
         }
 
-        .sidebar a:hover, .sidebar a.active {
+        .sidebar a:hover,
+        .sidebar a.active {
             background: #1d4ed8;
             color: white;
         }
@@ -224,25 +238,49 @@
         }
 
         /* Main Content Area */
-        .main-content { margin-left: 220px; transition: 0.3s; }
-        .main-content.full { margin-left: 0; }
+        .main-content {
+            margin-left: 220px;
+            transition: 0.3s;
+        }
 
-        .dashboard { display: flex; gap: 20px; padding: 20px; flex-wrap: wrap; }
+        .main-content.full {
+            margin-left: 0;
+        }
+
+        .dashboard {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
 
         .card {
             width: 280px;
             padding: 20px;
             border-radius: 15px;
             background: #1a1b23;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             border: none;
         }
 
-        .card-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .up { color: #00d68f; }
-        .down { color: #ff4d4d; }
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-        #revenueChart { width: 100% !important; height: 350px !important; }
+        .up {
+            color: #00d68f;
+        }
+
+        .down {
+            color: #ff4d4d;
+        }
+
+        #revenueChart {
+            width: 100% !important;
+            height: 350px !important;
+        }
 
         .parking-section {
             margin: 40px 20px;
@@ -275,47 +313,131 @@
             border-left: 1px solid #1f2937;
         }
 
-        .modal.show { transform: translateX(0); visibility: visible; opacity: 1; }
+        .modal.show {
+            transform: translateX(0);
+            visibility: visible;
+            opacity: 1;
+        }
 
-        .modal-box { padding: 25px; overflow-y: auto; height: 100%; display: flex; flex-direction: column; gap: 15px; }
-        
+        .modal-box {
+            padding: 25px;
+            overflow-y: auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         input {
-            width: 100%; padding: 12px; border-radius: 12px; border: none;
-            background: #1f2937; color: #fff; margin-bottom: 5px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: #1f2937;
+            color: #fff;
+            margin-bottom: 5px;
         }
 
-        .input-with-icon { position: relative; }
-        .input-with-icon i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #7c5cff; }
-        .input-with-icon input { padding-left: 35px; }
+        .input-with-icon {
+            position: relative;
+        }
 
-        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .input-with-icon i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7c5cff;
+        }
+
+        .input-with-icon input {
+            padding-left: 35px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         .tags button {
-            padding: 8px 12px; border-radius: 10px; border: none;
-            background: #1f2937; color: #fff; cursor: pointer; font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: none;
+            background: #1f2937;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
         }
-        .tags button.active { background: #6366f1; }
+
+        .tags button.active {
+            background: #6366f1;
+        }
 
         .submit {
-            width: 100%; padding: 15px; border-radius: 15px; border: none;
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
             background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            color: #fff; font-weight: 600; cursor: pointer; margin-top: 10px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
-        .modal-switch { position: relative; width: 40px; height: 20px; display: inline-block; }
-        .modal-switch input { display: none; }
-        .modal-switch span { 
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: #555; border-radius: 20px; cursor: pointer; 
+        .modal-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            display: inline-block;
         }
+
+        .modal-switch input {
+            display: none;
+        }
+
+        .modal-switch span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #555;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
         .modal-switch span::before {
-            content: ""; position: absolute; width: 16px; height: 16px;
-            background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: 0.3s;
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
         }
-        .modal-switch input:checked + span { background: #6366f1; }
-        .modal-switch input:checked + span::before { transform: translateX(20px); }
 
-        .close { position: absolute; right: 15px; top: 15px; cursor: pointer; font-size: 24px; color: #fff; z-index: 10; }
-        
+        .modal-switch input:checked+span {
+            background: #6366f1;
+        }
+
+        .modal-switch input:checked+span::before {
+            transform: translateX(20px);
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+            z-index: 10;
+        }
+
         /* --- CSS END --- */
     </style>
 </head>
@@ -435,7 +557,8 @@
             </div>
 
             <div class="parking-section">
-                <img src="https://via.placeholder.com/1200x250/1e293b/ffffff?text=Parking+Overview+Visual" alt="Parking Cars">
+                <img src="https://via.placeholder.com/1200x250/1e293b/ffffff?text=Parking+Overview+Visual"
+                    alt="Parking Cars">
             </div>
         </div>
     </div>
