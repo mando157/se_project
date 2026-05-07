@@ -1,8 +1,7 @@
--- Data Base
 CREATE DATABASE parking;
-
 USE parking;
 
+-- USERS
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     fullName VARCHAR(100),
@@ -12,17 +11,41 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- PARKING SPOTS
 CREATE TABLE parking_spots (
     spot_id INT AUTO_INCREMENT PRIMARY KEY,
-    spot_name VARCHAR(100),
-    price DECIMAL(10,2)
+    owner_id INT NOT NULL,
+
+    spot_name VARCHAR(100) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+
+    price DECIMAL(10,2) NOT NULL,
+    total_slots INT NOT NULL,
+    
+    status ENUM('active','inactive') DEFAULT 'active',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- SLOTS
+CREATE TABLE slots (
+    slot_id INT AUTO_INCREMENT PRIMARY KEY,
+    spot_id INT NOT NULL,
+
+    slot_name VARCHAR(50),
+    status ENUM('active','booked','blocked') DEFAULT 'active',
+
+    FOREIGN KEY (spot_id) REFERENCES parking_spots(spot_id) ON DELETE CASCADE
+);
+
+-- BOOKINGS
 CREATE TABLE bookings (
     booking_id INT AUTO_INCREMENT PRIMARY KEY,
 
-    user_id INT,
-    spot_id INT,
+    user_id INT NOT NULL,
+    spot_id INT NOT NULL,
 
     date DATE,
     start_time TIME,
@@ -32,7 +55,8 @@ CREATE TABLE bookings (
     price_per_hour DECIMAL(10,2),
     total_cost DECIMAL(10,2),
 
-    status VARCHAR(20),
+    status ENUM('pending','active','completed','cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending','paid') DEFAULT 'pending',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -40,21 +64,25 @@ CREATE TABLE bookings (
     FOREIGN KEY (spot_id) REFERENCES parking_spots(spot_id) ON DELETE CASCADE
 );
 
+-- NOTIFICATIONS
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
-    user_id INT,
+    user_id INT NOT NULL,
 
     title VARCHAR(255),
     message TEXT,
     type VARCHAR(20),
     time VARCHAR(20),
 
+    is_read BOOLEAN DEFAULT 0,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- FINES
 CREATE TABLE fines (
     fine_id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -71,4 +99,3 @@ CREATE TABLE fines (
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
