@@ -1,12 +1,31 @@
-// ===== TIMER =====
-let time = 900; // 15 min
+function updateTimer() {
+    let now = new Date();
+    let today =
+        now.toISOString().split('T')[0];
+    let end =
+        new Date(today + "T" + endTime);
+    let diff =
+        Math.floor((end - now) / 1000);
 
-setInterval(() => {
-    let min = Math.floor(time / 60);
-    let sec = time % 60;
+    if (diff <= 0) {
+        document.getElementById("timer")
+        .innerText = "Expired";
+        return;
+    }
 
-    document.getElementById("timer").innerText =
-        `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    let hours =
+        Math.floor(diff / 3600);
+    let minutes =
+        Math.floor((diff % 3600) / 60);
+    let seconds =
+        diff % 60;
 
-    if (time > 0) time--;
-}, 1000);
+    document.getElementById("timer")
+    .innerText =
+        `${String(hours).padStart(2, '0')}:` +
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}`;
+}
+
+setInterval(updateTimer, 1000);
+updateTimer();

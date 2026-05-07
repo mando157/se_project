@@ -22,7 +22,7 @@
             <ul class="nav-links">
                 <li><a href="<?= BASE_URL ?>Driver">live Map</a></li>
                 <li><a href="<?= BASE_URL ?>Driver/map">Find Parking</a></li>
-                <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/MyBookings">My Bookings</a></li>
                 <li><a href="<?= BASE_URL ?>Driver/notify">Notifications</a></li>
             </ul>
         </nav>
@@ -86,10 +86,16 @@
                     <form action="<?= BASE_URL ?>Driver/confirmBooking" method="POST">
 
                         <input type="hidden" name="spot_id" value="<?= $spot_id ?>">
+
                         <input type="hidden" name="total" id="totalInput">
+
                         <input type="hidden" name="duration" id="durationInput">
+
                         <input type="hidden" name="start" id="startInput">
+
                         <input type="hidden" name="end" id="endInput">
+
+                        <input type="hidden" name="date" id="dateInput">
 
                         <button type="submit" class="confirm-btn">
                             Confirm Booking
@@ -106,15 +112,21 @@
     </div>
 
     <script>
-        const price = <?php echo $price; ?>;
+
+        const price = <?= $price ?>;
 
         function calc() {
+
+            let date = document.getElementById("date").value;
+
             let s = document.getElementById("start").value;
+
             let e = document.getElementById("end").value;
 
-            if (s && e) {
+            if (date && s && e) {
 
                 let st = new Date("1970-01-01T" + s);
+
                 let en = new Date("1970-01-01T" + e);
 
                 if (en <= st) {
@@ -123,22 +135,35 @@
 
                 let diff = (en - st) / (1000 * 60 * 60);
 
+                let total = diff * price;
+
                 document.getElementById("duration").innerText =
-                    "Duration: " + diff + " hrs";
+                    "Duration: " + diff.toFixed(1) + " hrs";
 
                 document.getElementById("total").innerText =
-                    "$" + (diff * price).toFixed(2);
+                    "$" + total.toFixed(2);
 
-                document.getElementById("totalInput").value = diff * price;
+                document.getElementById("totalInput").value = total;
+
                 document.getElementById("durationInput").value = diff;
 
                 document.getElementById("startInput").value = s;
+
                 document.getElementById("endInput").value = e;
+
+                document.getElementById("dateInput").value = date;
             }
         }
 
-        document.getElementById("start").addEventListener("change", calc);
-        document.getElementById("end").addEventListener("change", calc);
+        document.getElementById("date")
+            .addEventListener("change", calc);
+
+        document.getElementById("start")
+            .addEventListener("change", calc);
+
+        document.getElementById("end")
+            .addEventListener("change", calc);
+
     </script>
 </body>
 

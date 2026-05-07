@@ -26,7 +26,7 @@
       <ul class="nav-links">
         <li><a href="<?= BASE_URL ?>Driver">Live Map</a></li>
         <li><a href="<?= BASE_URL ?>Driver/map" class="active">Find Parking</a></li>
-        <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+        <li><a href="<?= BASE_URL ?>Driver/MyBookings">My Bookings</a></li>
         <li><a href="<?= BASE_URL ?>Driver/notify">Notifications</a></li>
       </ul>
     </nav>
@@ -72,7 +72,7 @@
               <div class="card-bottom">
                 <span>Available Spots</span>
 
-                <a class="primary" href="<?= BASE_URL ?>Driver/bookingDetails<?= $row['spot_id'] ?>">
+                <a class="primary" href="<?= BASE_URL ?>Driver/bookingDetails?spot_id=<?= $row['spot_id'] ?>">
                   Book Now
                 </a>
               </div>
