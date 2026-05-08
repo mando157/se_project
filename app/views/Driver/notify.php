@@ -92,31 +92,18 @@
                     <!-- ===== SESSION CARD ===== -->
                     <div class="session-card">
                         <h4>Active Session</h4>
-                        <h2>Skyline Plaza</h2>
+                        <h2>
+                            <?= $booking['spot_name'] ?? 'No active session'; ?>
+                        </h2>
                         <p>Level 3 • Spot B-14</p>
 
-                        <div class="timer" id="timer">00:15:00</div>
-
-                        <button class="btn btn-light w-100">Extend</button>
-                    </div>
-
-                    <!-- ===== SUMMARY ===== -->
-                    <div class="summary mt-4">
-                        <h5>Activity</h5>
-
-                        <div class="d-flex justify-content-between">
-                            <span>Savings</span>
-                            <b>$42</b>
+                        <div class="timer" id="timer">
+                            <?= $booking['duration'] ?? '00:00:00' ?>
                         </div>
 
-                        <div class="progress mt-2">
-                            <div class="progress-bar bg-success" style="width:75%"></div>
-                        </div>
-
+                        <a class="btn btn-light w-100" href="<?= BASE_URL ?>Driver/MyBookings ?>">Extend</a>
                     </div>
-
                 </div>
-
             </div>
         </div>
         
@@ -126,7 +113,7 @@
             const endTime =
                 "<?= $booking['end_time'] ?? '00:00:00' ?>";
         </script>
-        <script src="<?= BASE_URL ?>assets/js/notify.js"></script>
+        <script src="<?= BASE_URL ?>assets/js/notify.js?<?= time() ?>"></script>
 </body>
 
 </html>

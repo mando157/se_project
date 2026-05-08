@@ -84,28 +84,20 @@ class DriverController extends Controller
         $conn = $db->getConnection();
 
         $user = Auth::user();
-
         $user_id = $user['id'];
-
         $spot_id = intval($_POST['spot_id']);
-
         $date = $_POST['date'];
-
         $start = $_POST['start'];
-
         $end = $_POST['end'];
 
         $stmt = $conn->prepare(
-            "SELECT price FROM parking_spots
-             WHERE spot_id = ?"
+            "SELECT price, location FROM parking_spots WHERE spot_id = ?"
         );
 
         $stmt->bind_param("i", $spot_id);
-
         $stmt->execute();
 
         $result = $stmt->get_result();
-
         $spot = $result->fetch_assoc();
 
         if (!$spot) {
@@ -113,7 +105,7 @@ class DriverController extends Controller
         }
 
         $price_per_hour = $spot['price'];
-
+        $location = $spot['location'];
         $startTime = strtotime($start);
 
         $endTime = strtotime($end);
@@ -121,34 +113,30 @@ class DriverController extends Controller
         if ($endTime <= $startTime) {
             $endTime += 86400;
         }
-
         $duration = ($endTime - $startTime) / 3600;
-
         $total = $duration * $price_per_hour;
-
         $status = "pending";
 
         $stmt = $conn->prepare(
-            "INSERT INTO bookings
-            (
-                user_id,
-                spot_id,
-                date,
-                start_time,
-                end_time,
-                duration,
-                price_per_hour,
-                total_cost,
-                status
-            )
-            VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+            "INSERT INTO bookings (
+        user_id,
+        spot_id,
+        location,
+        date,
+        start_time,
+        end_time,
+        duration,
+        price_per_hour,
+        total_cost,
+        status
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
         $stmt->bind_param(
-            "iisssddds",
+            "iissssddds",
             $user_id,
             $spot_id,
+            $location,
             $date,
             $start,
             $end,
@@ -205,6 +193,7 @@ class DriverController extends Controller
             'name' => $booking['spot_name'],
             'level' => $booking['spot_id'],
             'price' => $booking['price'],
+            'location' => $booking['location'],
             'type' => $type,
             'extra_hours' => $extra_hours,
             'extra_cost' => $extra_cost
@@ -340,6 +329,85 @@ class DriverController extends Controller
         header("Location: " . BASE_URL . "Driver/MyBookings");
 
         exit;
+    }
+
+    public function completeBooking()
+    {
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        $booking_id =
+            intval($_GET['booking_id']);
+
+        // update booking
+        $stmt = $conn->prepare(
+            "UPDATE bookings
+         SET status = 'completed'
+         WHERE booking_id = ?"
+        );
+        $stmt->bind_param(
+            "i",
+            $booking_id
+        );
+        $stmt->execute();
+        // get booking owner
+        $stmt2 = $conn->prepare(
+            "SELECT
+            b.user_id,
+            p.spot_name
+         FROM bookings b
+         JOIN parking_spots p
+         ON b.spot_id = p.spot_id
+         WHERE b.booking_id = ?"
+        );
+
+        $stmt2->bind_param(
+            "i",
+            $booking_id
+        );
+
+        $stmt2->execute();
+
+        $result =
+            $stmt2->get_result();
+
+        $data =
+            $result->fetch_assoc();
+
+        if ($data) {
+            $title =
+                "Booking Completed";
+            $message =
+                "Your booking at "
+                .
+                $data['spot_name']
+                .
+                " has ended.";
+            $type =
+                "warning";
+            $time =
+                "Now";
+            $stmt3 = $conn->prepare(
+                "INSERT INTO notifications
+            (
+                user_id,
+                title,
+                message,
+                type,
+                time
+            )
+            VALUES (?, ?, ?, ?, ?)"
+            );
+            $stmt3->bind_param(
+                "issss",
+                $data['user_id'],
+                $title,
+                $message,
+                $type,
+                $time
+            );
+            $stmt3->execute();
+        }
     }
 
     public function notify()

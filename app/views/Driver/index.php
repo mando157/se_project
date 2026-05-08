@@ -53,7 +53,7 @@
                 and reclaim your time with the world's most advanced parking
                 network.</p>
             <div class="landing-btn">
-                <a href="./map.html" class="btn active-btn">Get Started</a>
+                <a href="<?= BASE_URL ?>Driver/map" class="btn active-btn">Get Started</a>
                 <a href="#" class="btn learn-more-btn">Learn More</a>
             </div>
         </div>
