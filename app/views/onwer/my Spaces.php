@@ -1,711 +1,454 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- الروابط الخارجية للمكتبات -->
+    <title>Urban Space Management Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <title>OWNER PAGE - Urban Kinetic</title>
 
     <style>
-        /* --- CSS START --- */
-        body {
-            background: #0f172a;
-            color: #f1f5f9;
-            font-family: sans-serif;
+        /* CSS Variables */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --sidebar-width: 240px;
+        }
+
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
 
-        .f1 {
-            background: #0f172a;
-            border-bottom: 1px solid #334155;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .f2 {
-            width: 300px;
-            border-radius: 20px;
-            border: none;
-            padding: 8px 12px;
-            background: #1b1d24;
-            color: white;
-        }
-
-        .f3 {
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
-            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .f4 {
-            color: #aaa !important;
-            margin-right: 20px !important;
-            /* تعديل المسافة لتكون منطقية */
-        }
-
-        .f4.f15 {
-            color: white !important;
-            border-bottom: 2px solid #7c5cff;
-        }
-
-        .f5 {
-            border-radius: 50px;
-            background: #7c5cff;
-            color: white;
-        }
-
-        .f5:hover {
-            background: white;
-            color: black;
-        }
-
-        .f6 {
-            font-size: 20px;
-            color: white;
-        }
-
-        .f6:hover {
-            color: #7c5cff;
-        }
-
-        .f10 {
-            background: #1e293b;
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid #334155;
-        }
-
-        h2,
-        h3,
-        h5 {
-            color: #ffffff;
-        }
-
-        p {
-            color: #94a3b8;
-        }
-
-        .notif {
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #e2e8f0;
-            border-left: 4px solid #3b82f6;
-        }
-
-        .notifications-card {
-            background: #0b1220;
-            border: 1px solid #1f2937;
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .notif-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .mark-read-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            opacity: 0.75;
-            transition: 0.2s;
-        }
-
-        .view-all-btn {
-            width: 100%;
-            margin-top: 12px;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 8px;
-            background: #1e40af;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .f20 {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .f20 button {
-            background: #1e3a8a;
-            color: white;
-            border: none;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            opacity: 0.6;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .f20 button.active {
-            opacity: 1;
-            background: #1d4ed8;
-            box-shadow: 0 0 10px rgba(29, 78, 216, 0.4);
-        }
-
-        /* Sidebar Styles */
+        /* --- Sidebar Navigation --- */
         .sidebar {
-            width: 220px;
+            width: var(--sidebar-width);
+            background: #020617;
             height: 100vh;
             position: fixed;
             left: 0;
-            top: 0;
-            background: #0b1220;
-            border-right: 1px solid #1f2937;
-            padding: 20px;
+            padding: 2rem 1rem;
             display: flex;
             flex-direction: column;
-            transition: 0.3s;
-            z-index: 1100;
+            gap: 2rem;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
-        .sidebar.hide {
-            transform: translateX(-100%);
-        }
-
-        .sidebar-top {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #1f2937;
-        }
-
-        .sidebar-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
+        .logo {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--accent-blue);
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
         }
 
-        .sidebar-title i {
-            color: #7c5cff;
-            text-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
-        }
-
-        .sidebar a {
+        .nav-links {
+            list-style: none;
             display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #94a3b8;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            font-size: 14px;
-            transition: 0.2s;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: #1d4ed8;
-            color: white;
-        }
-
-        .add-space-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+        .nav-item {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
             cursor: pointer;
-            width: 100%;
-        }
-
-        /* Main Content Area */
-        .main-content {
-            margin-left: 220px;
             transition: 0.3s;
-        }
-
-        .main-content.full {
-            margin-left: 0;
-        }
-
-        .dashboard {
             display: flex;
-            gap: 20px;
-            padding: 20px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .search-bar {
+            background: var(--card-bg);
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 320px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: white;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        /* --- Dashboard Cards --- */
+        .dashboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
         }
 
         .card {
-            width: 280px;
-            padding: 20px;
-            border-radius: 15px;
-            background: #1a1b23;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border: none;
-        }
-
-        .card-top {
+            background: var(--card-bg);
+            border-radius: 40px;
+            padding: 2.5rem;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            gap: 2.5rem;
+            align-items: center;
+            max-width: 950px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .up {
-            color: #00d68f;
+        .card:hover {
+            transform: translateY(-8px);
         }
 
-        .down {
-            color: #ff4d4d;
-        }
-
-        #revenueChart {
-            width: 100% !important;
-            height: 350px !important;
-        }
-
-        .parking-section {
-            margin: 40px 20px;
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-            background: #1a1b23;
-        }
-
-        .parking-section img {
-            width: 100%;
-            height: 250px;
+        .card-img {
+            width: 40%;
+            height: 280px;
             object-fit: cover;
-            opacity: 0.8;
+            border-radius: 32px;
         }
 
-        /* Modal Customization */
-        .modal {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 380px;
-            height: 100vh;
-            background: #0f172a;
-            transform: translateX(100%);
-            transition: 0.3s ease;
-            z-index: 2000;
-            display: block;
-            visibility: hidden;
-            border-left: 1px solid #1f2937;
+        .card-info {
+            flex: 1;
         }
 
-        .modal.show {
-            transform: translateX(0);
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-box {
-            padding: 25px;
-            overflow-y: auto;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            background: #1f2937;
-            color: #fff;
-            margin-bottom: 5px;
-        }
-
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-with-icon i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #7c5cff;
-        }
-
-        .input-with-icon input {
-            padding-left: 35px;
+        .space-id {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            text-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+            margin-bottom: 0.5rem;
+            font-family: monospace;
         }
 
         .tags {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
+            margin: 1.2rem 0;
         }
 
-        .tags button {
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: none;
-            background: #1f2937;
-            color: #fff;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .tags button.active {
-            background: #6366f1;
-        }
-
-        .submit {
-            width: 100%;
-            padding: 15px;
-            border-radius: 15px;
-            border: none;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            color: #fff;
+        .tags span {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-blue);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .action-btn {
+            background: var(--accent-blue);
+            color: #020617;
+            border: none;
+            padding: 0.9rem 2.2rem;
+            border-radius: 30px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 1.5rem;
+            transition: 0.3s;
         }
 
-        .modal-switch {
+        .action-btn:hover {
+            background: #7dd3fc;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* --- Toggle Switch --- */
+        .control-panel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 1.2rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .switch {
             position: relative;
-            width: 40px;
-            height: 20px;
             display: inline-block;
+            width: 50px;
+            height: 26px;
         }
 
-        .modal-switch input {
+        .switch input {
             display: none;
         }
 
-        .modal-switch span {
+        .slider {
             position: absolute;
+            cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: #555;
-            border-radius: 20px;
-            cursor: pointer;
+            background-color: #334155;
+            transition: .4s;
+            border-radius: 34px;
         }
 
-        .modal-switch span::before {
+        .slider:before {
+            position: absolute;
             content: "";
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #fff;
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
             border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: 0.3s;
         }
 
-        .modal-switch input:checked+span {
-            background: #6366f1;
+        input:checked+.slider {
+            background-color: var(--accent-green);
         }
 
-        .modal-switch input:checked+span::before {
-            transform: translateX(20px);
+        input:checked+.slider:before {
+            transform: translateX(24px);
         }
 
-        .close {
+        /* --- Modal Window --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 40px;
+            width: 450px;
+            text-align: center;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-btn {
             position: absolute;
-            right: 15px;
-            top: 15px;
+            top: 20px;
+            right: 25px;
             cursor: pointer;
-            font-size: 24px;
-            color: #fff;
-            z-index: 10;
+            font-size: 1.8rem;
+            color: var(--text-dim);
         }
 
-        /* --- CSS END --- */
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card-img {
+                width: 100%;
+                height: 220px;
+            }
+
+            .tags {
+                justify-content: center;
+            }
+
+            .control-panel {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-top">
-            <div class="sidebar-title">
-                <i class="fa-solid fa-square-parking"></i> Urban Kinetic
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo">URBAN CORE</div>
+        <ul class="nav-links">
+            <li class="nav-item active" onclick="setActive(this)">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </li>
+            <li class="nav-item" onclick="setActive(this)">
+                <i class="fa-solid fa-map"></i> Zone Mapping
+            </li>
+            <li class="nav-item" onclick="setActive(this)">
+                <i class="fa-solid fa-city"></i> Smart Spaces
+            </li>
+            <li class="nav-item" onclick="setActive(this)">
+                <i class="fa-solid fa-chart-simple"></i> Analytics
+            </li>
+            <li class="nav-item" onclick="setActive(this)">
+                <i class="fa-solid fa-sliders"></i> Settings
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+        <header>
+            <div>
+                <h1>Urban Management</h1>
+                <p style="color: var(--text-dim);">Monitoring city zones in real-time</p>
             </div>
-            <div class="sidebar-subtitle">Space Owner</div>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search areas, sensors...">
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Card 1 -->
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800"
+                    alt="CBD Area" class="card-img">
+                <div class="card-info">
+                    <div class="space-id">#102</div>
+                    <h3>Central Business District</h3>
+                    <div class="tags">
+                        <span>High Traffic</span>
+                        <span>Commercial</span>
+                    </div>
+                    <div class="control-panel">
+                        <span>Smart Lighting:</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button class="action-btn" onclick="openModal('Central Business District')">View Insights</button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800"
+                    alt="Residential Zone" class="card-img">
+                <div class="card-info">
+                    <div class="space-id">#085</div>
+                    <h3>North Residential Zone</h3>
+                    <div class="tags">
+                        <span>Low Noise</span>
+                        <span>Eco-Friendly</span>
+                    </div>
+                    <div class="control-panel">
+                        <span>Auto Irrigation:</span>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <button class="action-btn" onclick="openModal('North Residential Zone')">View Insights</button>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <a href="#" class="active" onclick="setActive(this)">
-            <i class="fa-solid fa-house"></i> Dashboard
-        </a>
-        <a href="#" onclick="setActive(this)">
-            <i class="fa-solid fa-building"></i> My Spaces
-        </a>
-        <a href="#" onclick="setActive(this)">
-            <i class="fa-solid fa-calendar-days"></i> Availability
-        </a>
-        <a href="#" onclick="setActive(this)">
-            <i class="fa-solid fa-book"></i> Bookings
-        </a>
-        <a href="#" onclick="setActive(this)">
-            <i class="fa-solid fa-dollar-sign"></i> Earnings
-        </a>
-
-        <div class="sidebar-actions mt-auto">
-            <button class="add-space-btn" onclick="openModal()">
-                <span class="icon"><i class="fa-solid fa-plus"></i></span>
-                Add New Space
-            </button>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <nav class="navbar px-4 py-3 f1">
-            <div class="navbar-left">
-                <button class="show-sidebar-btn-inline btn btn-primary" onclick="toggleSidebar()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <input class="search f2 ms-2" placeholder="Search Command Center...">
-            </div>
-            <div class="ms-auto d-flex align-items-center gap-3 f3">
-                <a href="#" class="nav-link f4 f15">Analytics</a>
-                <a href="#" class="nav-link f4">Reports</a>
-                <a href="#" class="nav-link f4">Live Map</a>
-                <button class="btn f5">Release All Slots</button>
-                <a href="#"><i class="fa-regular fa-bell icon f6"></i></a>
-            </div>
-        </nav>
-
-        <div class="container mt-4">
-            <h2 class="f8">Command Center</h2>
-
-            <!-- Stats Cards -->
-            <div class="dashboard">
-                <div class="card earnings">
-                    <div class="card-top">
-                        <span class="title">TOTAL EARNINGS</span>
-                        <div class="icon">💵</div>
-                    </div>
-                    <h2>$42,890 <span class="up">+12.5%</span></h2>
-                    <p>vs. $38,120 last month</p>
-                </div>
-
-                <div class="card bookings">
-                    <div class="card-top">
-                        <span class="title">TOTAL BOOKINGS</span>
-                        <div class="icon">📊</div>
-                    </div>
-                    <h2>1,402 <span class="up">+8.1%</span></h2>
-                    <p>Active sessions: 284</p>
-                </div>
-
-                <div class="card occupancy">
-                    <div class="card-top">
-                        <span class="title">OCCUPANCY RATE</span>
-                        <div class="icon">📱</div>
-                    </div>
-                    <h2>94.2% <span class="down">-0.4%</span></h2>
-                    <p>Peak hour: 14:00 - 16:00</p>
-                </div>
-            </div>
-
-            <!-- Chart & Notifications -->
-            <div class="row mt-4 g-3">
-                <div class="col-md-8">
-                    <div class="card f10 w-100">
-                        <h5>Revenue Performance</h5>
-                        <p>Weekly analytical breakdown</p>
-                        <div class="f20">
-                            <button id="weeklyBtn" class="active" onclick="setWeekly()">Weekly</button>
-                            <button id="monthlyBtn" onclick="setMonthly()">Monthly</button>
-                        </div>
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="notifications-card">
-                        <div class="notif-header">
-                            <h5>Notifications</h5>
-                            <button class="mark-read-btn">Mark all read</button>
-                        </div>
-                        <div class="notif">New review received</div>
-                        <div class="notif">Capacity warning triggered</div>
-                        <div class="notif">Payment successfully completed</div>
-                        <button class="view-all-btn">View All Notifications</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="parking-section">
-                <img src="https://via.placeholder.com/1200x250/1e293b/ffffff?text=Parking+Overview+Visual"
-                    alt="Parking Cars">
-            </div>
+    <!-- Modal Details -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Area Analytics</h2>
+            <p style="margin: 1.5rem 0; color: var(--text-dim); line-height: 1.6;">
+                Accessing live telemetry from <strong id="zoneName" style="color: var(--accent-blue);"></strong>.
+                Data includes power consumption, pedestrian density, and air quality metrics.
+            </p>
+            <button class="action-btn" onclick="closeModal()" style="width: 100%;">Close Terminal</button>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-box">
-            <span class="close" onclick="closeModal()">×</span>
-            <h2 class="modal-title">New Space</h2>
-
-            <label>LOCATION REFERENCE</label>
-            <div class="input-with-icon">
-                <i class="fa-solid fa-location-dot"></i>
-                <input type="text" placeholder="e.g. 5th Avenue Loft">
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label>PRICE PER HOUR</label>
-                    <div class="input-with-icon">
-                        <i class="fa-solid fa-dollar-sign"></i>
-                        <input type="number" placeholder="0.00">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <label>TOTAL SLOTS</label>
-                    <input type="number" value="1">
-                </div>
-            </div>
-
-            <label>SPACE ATTRIBUTES</label>
-            <div class="tags">
-                <button><i class="fa-solid fa-bolt"></i> EV Charging</button>
-                <button class="active"><i class="fa-solid fa-shield-halved"></i> CCTV Security</button>
-                <button><i class="fa-solid fa-wheelchair"></i> Disabled Access</button>
-                <button><i class="fa-solid fa-warehouse"></i> Indoor</button>
-            </div>
-
-            <div class="toggle-box d-flex justify-content-between align-items-center mt-3 p-3 bg-dark rounded">
-                <div>
-                    <h6 class="mb-0">Instant Activation</h6>
-                    <p class="mb-0" style="font-size: 11px;">Live immediately after verification.</p>
-                </div>
-                <label class="modal-switch">
-                    <input type="checkbox" checked>
-                    <span></span>
-                </label>
-            </div>
-
-            <button class="submit">Register Space</button>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        /* --- JS START --- */
-        let chart;
-
-        window.onload = function () {
-            setWeekly();
-        };
-
-        function setWeekly() {
-            setChartActive("weekly");
-            drawChart(
-                ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                [1200, 1500, 1800, 2200, 2000, 2500, 2700]
-            );
-        }
-
-        function setMonthly() {
-            setChartActive("monthly");
-            drawChart(
-                ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                [8000, 9500, 11000, 12000]
-            );
-        }
-
-        function setChartActive(type) {
-            document.getElementById("weeklyBtn").classList.remove("active");
-            document.getElementById("monthlyBtn").classList.remove("active");
-            if (type === "weekly") {
-                document.getElementById("weeklyBtn").classList.add("active");
-            } else {
-                document.getElementById("monthlyBtn").classList.add("active");
-            }
-        }
-
-        function drawChart(labels, data) {
-            const ctx = document.getElementById('revenueChart');
-            if (chart) { chart.destroy(); }
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue',
-                        data: data,
-                        borderColor: '#7c5cff',
-                        backgroundColor: 'rgba(124, 92, 255, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
+        // Toggle Sidebar Active State
+        function setActive(element) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
             });
+            element.classList.add('active');
         }
 
-        function setActive(el) {
-            document.querySelectorAll(".sidebar a").forEach(link => link.classList.remove("active"));
-            el.classList.add("active");
-        }
+        // Modal Controls
+        const modal = document.getElementById("detailsModal");
+        const zoneNameSpan = document.getElementById("zoneName");
 
-        function toggleSidebar() {
-            document.querySelector(".sidebar").classList.toggle("hide");
-            document.querySelector(".main-content").classList.toggle("full");
-        }
-
-        function openModal() {
-            document.getElementById("modal").classList.add("show");
+        function openModal(zoneName) {
+            zoneNameSpan.innerText = zoneName;
+            modal.style.display = "flex";
         }
 
         function closeModal() {
-            document.getElementById("modal").classList.remove("show");
+            modal.style.display = "none";
         }
 
-        // إغلاق المودال عند الضغط خارجه
-        window.addEventListener("click", function (e) {
-            const modal = document.getElementById("modal");
-            if (e.target === modal) {
+        // Close on Outside Click
+        window.onclick = function (event) {
+            if (event.target == modal) {
                 closeModal();
             }
+        }
+
+        // Sensor Toggle Notification
+        document.querySelectorAll('.switch input').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const status = this.checked ? "ON" : "OFF";
+                console.log(`System Status: ${status}`);
+            });
         });
-        /* --- JS END --- */
     </script>
 </body>
 
