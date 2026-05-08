@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/booking.css?v=1">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/booking.css?v=1.0">
     <title>My Bookings</title>
 </head>
 
@@ -133,20 +133,23 @@
                         <?php } ?>
                         <!-- EXTEND -->
                         <?php if ($row['status'] == 'paid') { ?>
-                            <form action="<?= BASE_URL ?>Driver/extendBooking" method="POST">
-                                <input type="hidden" name="booking_id" value="<?= $row['booking_id'] ?>">
-                                <button class="btn-primary">
-                                    Extend Booking
-                                </button>
-                            </form>
-                            <?php if ($row['status'] == 'paid') { ?>
+
                             <form action="<?= BASE_URL ?>Driver/payment" method="GET">
+
+                                <input type="hidden" name="type" value="extend">
+
                                 <input type="hidden" name="booking_id" value="<?= $row['booking_id'] ?>">
-                                <button class="btn-success">
-                                    Pay Now
+
+                                <input type="number" name="extra_hours" min="1" value="1" class="extend-input" required>
+
+                                <button class="btn-primary">
+
+                                    Extend Booking
+
                                 </button>
+
                             </form>
-                             <?php } ?>
+
                         <?php } ?>
                         <!-- PAY NOW -->
                         <?php if ($row['status'] == 'pending') { ?>

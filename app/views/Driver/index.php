@@ -26,7 +26,7 @@
             <ul class="nav-links">
                 <li><a href="<?= BASE_URL ?>Driver" class="active">Live Map</a></li>
                 <li><a href="<?= BASE_URL ?>Driver/map">Find Parking</a></li>
-                <li><a href="<?= BASE_URL ?>Driver/booking">My Bookings</a></li>
+                <li><a href="<?= BASE_URL ?>Driver/MyBookings">My Bookings</a></li>
                 <li><a href="<?= BASE_URL ?>Driver/support">Support</a></li>
             </ul>
 

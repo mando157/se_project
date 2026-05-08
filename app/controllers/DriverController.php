@@ -175,39 +175,39 @@ class DriverController extends Controller
     {
         $db = new Database();
         $conn = $db->getConnection();
-
         $booking_id = intval($_GET['booking_id']);
-
+        $type = $_GET['type'] ?? 'booking';
+        $extra_hours =
+            intval($_GET['extra_hours'] ?? 0);
         $stmt = $conn->prepare(
             "SELECT b.*, p.spot_name, p.price
-             FROM bookings b
-             JOIN parking_spots p
-             ON b.spot_id = p.spot_id
-             WHERE b.booking_id = ?"
+         FROM bookings b
+         JOIN parking_spots p
+         ON b.spot_id = p.spot_id
+         WHERE b.booking_id = ?"
         );
-
         $stmt->bind_param("i", $booking_id);
-
         $stmt->execute();
-
         $result = $stmt->get_result();
-
         $booking = $result->fetch_assoc();
-
         if (!$booking) {
             die("Booking not found");
         }
-
+        $extra_cost = 0;
+        if ($type == 'extend') {
+            $extra_cost =
+                $booking['price_per_hour']
+                *
+                $extra_hours;
+        }
         $this->view("driver/payment", [
-
             'booking' => $booking,
-
             'name' => $booking['spot_name'],
-
             'level' => $booking['spot_id'],
-
-            'price' => $booking['price']
-
+            'price' => $booking['price'],
+            'type' => $type,
+            'extra_hours' => $extra_hours,
+            'extra_cost' => $extra_cost
         ]);
     }
 
@@ -215,28 +215,59 @@ class DriverController extends Controller
     {
         $db = new Database();
         $conn = $db->getConnection();
-
-        $booking_id = intval($_POST['booking_id']);
-
-        $stmt = $conn->prepare(
-            "UPDATE bookings
+        $booking_id =
+            intval($_POST['booking_id']);
+        $type =
+            $_POST['type'];
+        if ($type == 'extend') {
+            $extra_hours =
+                intval($_POST['extra_hours']);
+            $stmt = $conn->prepare(
+                "UPDATE bookings
+             SET
+             end_time =
+             ADDTIME(
+                end_time,
+                SEC_TO_TIME(? * 3600)
+             ),
+             duration =
+             duration + ?,
+             total_cost =
+             total_cost +
+             (price_per_hour * ?)
+             WHERE booking_id = ?"
+            );
+            $stmt->bind_param(
+                "iiii",
+                $extra_hours,
+                $extra_hours,
+                $extra_hours,
+                $booking_id
+            );
+            $stmt->execute();
+        } else {
+            $stmt = $conn->prepare(
+                "UPDATE bookings
              SET status = 'paid'
              WHERE booking_id = ?"
+            );
+            $stmt->bind_param(
+                "i",
+                $booking_id
+            );
+            $stmt->execute();
+        }
+        header(
+            "Location: " .
+            BASE_URL .
+            "Driver/MyBookings"
         );
-
-        $stmt->bind_param("i", $booking_id);
-
-        $stmt->execute();
-
-        header("Location: " . BASE_URL . "Driver/MyBookings");
-
         exit;
     }
 
     public function MyBookings()
     {
         $user = Auth::user();
-
         $user_id = $user['id'];
 
         $db = new Database();
@@ -252,17 +283,13 @@ class DriverController extends Controller
         );
 
         $stmt->bind_param("i", $user_id);
-
         $stmt->execute();
-
         $result = $stmt->get_result();
-
         $bookings = [];
 
         while ($row = mysqli_fetch_assoc($result)) {
             $bookings[] = $row;
         }
-
         $this->view("driver/booking", [
             'bookings' => $bookings
         ]);
