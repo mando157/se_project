@@ -47,6 +47,8 @@ CREATE TABLE bookings (
     user_id INT NOT NULL,
     spot_id INT NOT NULL,
 
+    location VARCHAR(255) NOT NULL,
+
     date DATE,
     start_time TIME,
     end_time TIME,
