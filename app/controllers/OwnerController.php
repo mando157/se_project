@@ -10,15 +10,13 @@ class OwnerController extends Controller
     {
         Auth::redirectIfNotLogged();
         Auth::forbidIfNotRole('owner');
-
-        $this->ownerModel = $this->model("OwnerModel");
     }
 
     public function index()
     {
         $user = Auth::user();
 
-        $this->view("owner/Dashboard", [
+        $this->view("Owner/index", [
             'user' => $user
         ]);
     }
