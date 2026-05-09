@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/booking.css?v=1.1">
-    <title>My Bookings</title>
+    <title>My Bookings — ParkFlow</title>
 </head>
 
 <body>

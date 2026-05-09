@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Welcome</title>
+    <title>Home — ParkFlow</title>
     <!--* CSS Style Sheets -->
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/driver.css?v=1.1">
     <!--* Font Awsome -->
