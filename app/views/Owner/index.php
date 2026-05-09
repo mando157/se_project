@@ -8,6 +8,12 @@
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
   <title>Owner Dashboard - Urban Kinetic</title>
+  <style>
+    .notification-unread {
+      background-color: rgba(59, 130, 246, 0.2);
+      border-right: 3px solid #3b82f6;
+    }
+  </style>
 </head>
 
 <body>
@@ -74,12 +80,12 @@
             <span class="title">TOTAL EARNINGS</span>
             <div class="icon">💵</div>
           </div>
-          <h2>$<?php echo isset($data['totalearnings']) ? number_format($data['totalearnings'], 2) : '0.00'; ?> 
-            <span class="<?php echo (($data['earningsChange'] ?? 0) >= 0) ? 'up' : 'down'; ?>">
-              <?php echo (($data['earningsChange'] ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($data['earningsChange'] ?? 0, 1); ?>%
+          <h2>$<?php echo isset($totalearnings) ? number_format($totalearnings, 2) : '0.00'; ?> 
+            <span class="<?php echo (($earningsChange ?? 0) >= 0) ? 'up' : 'down'; ?>">
+              <?php echo (($earningsChange ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($earningsChange ?? 0, 1); ?>%
             </span>
           </h2>
-          <p>vs. $<?php echo number_format($data['lastMonthEarnings'] ?? 0, 2); ?> last month</p>
+          <p>vs. $<?php echo number_format($lastMonthEarnings ?? 0, 2); ?> last month</p>
         </div>
 
         <!-- Card 2: TOTAL BOOKINGS -->
@@ -89,15 +95,15 @@
             <div class="icon">📊</div>
           </div>
           <h2 id="totalBookingsCount"><?php 
-            $active = isset($data['activeBookings']) ? $data['activeBookings'] : 0;
-            $pending = isset($data['pendingBookings']) ? $data['pendingBookings'] : 0;
+            $active = isset($activeBookings) ? $activeBookings : 0;
+            $pending = isset($pendingBookings) ? $pendingBookings : 0;
             echo $active + $pending;
           ?> 
-            <span class="<?php echo (($data['bookingsChange'] ?? 0) >= 0) ? 'up' : 'down'; ?>">
-              <?php echo (($data['bookingsChange'] ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($data['bookingsChange'] ?? 0, 1); ?>%
+            <span class="<?php echo (($bookingsChange ?? 0) >= 0) ? 'up' : 'down'; ?>">
+              <?php echo (($bookingsChange ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($bookingsChange ?? 0, 1); ?>%
             </span>
           </h2>
-          <p>Active sessions: <?php echo isset($data['activeBookings']) ? $data['activeBookings'] : 0; ?></p>
+          <p>Active sessions: <?php echo isset($activeBookings) ? $activeBookings : 0; ?></p>
         </div>
 
         <!-- Card 3: OCCUPANCY RATE -->
@@ -106,12 +112,12 @@
             <span class="title">OCCUPANCY RATE</span>
             <div class="icon">📱</div>
           </div>
-          <h2><?php echo isset($data['occupancyRate']) ? $data['occupancyRate'] : '0'; ?>% 
-            <span class="<?php echo (($data['occupancyChange'] ?? 0) >= 0) ? 'up' : 'down'; ?>">
-              <?php echo (($data['occupancyChange'] ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($data['occupancyChange'] ?? 0, 1); ?>%
+          <h2><?php echo isset($occupancyRate) ? $occupancyRate : '0'; ?>% 
+            <span class="<?php echo (($occupancyChange ?? 0) >= 0) ? 'up' : 'down'; ?>">
+              <?php echo (($occupancyChange ?? 0) >= 0 ? '+' : ''); ?><?php echo number_format($occupancyChange ?? 0, 1); ?>%
             </span>
           </h2>
-          <p>Peak hour: <span id="peakHourDisplay"><?php echo htmlspecialchars($data['peakHour'] ?? '14:00 - 16:00'); ?></span></p>
+          <p>Peak hour: <span id="peakHourDisplay"><?php echo htmlspecialchars($peakHour ?? '14:00 - 16:00'); ?></span></p>
         </div>
       </div>
 
@@ -135,8 +141,8 @@
               <button class="mark-read-btn" onclick="markAllRead()">Mark all read</button>
             </div>
             <div id="notificationsList">
-              <?php if (isset($data['notifications']) && !empty($data['notifications'])): ?>
-                <?php foreach($data['notifications'] as $notification): ?>
+              <?php if (isset($notifications) && !empty($notifications)): ?>
+                <?php foreach($notifications as $notification): ?>
                   <div class="notif <?php echo ($notification['is_read'] == 0) ? 'notification-unread' : ''; ?>" data-id="<?php echo $notification['id']; ?>">
                     <?php echo htmlspecialchars($notification['message']); ?>
                     <small style="display: block; font-size: 11px; color: #888;">
@@ -158,7 +164,7 @@
         <div class="recent-bookings-table">
           <h5 style="color: white; margin-bottom: 15px;">Recent Bookings</h5>
           <div id="recentBookingsTable">
-            <?php if (isset($data['recentBookings']) && !empty($data['recentBookings'])): ?>
+            <?php if (isset($recentBookings) && !empty($recentBookings)): ?>
               <table class="table table-dark table-hover">
                 <thead>
                   <tr>
@@ -171,9 +177,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach($data['recentBookings'] as $booking): ?>
+                  <?php foreach($recentBookings as $booking): ?>
                     <tr>
-                      <td><?php echo htmlspecialchars($booking['name'] ?? $booking['parking_name'] ?? 'N/A'); ?></td>
+                      <td><?php echo htmlspecialchars($booking['parking_name'] ?? $booking['name'] ?? 'N/A'); ?></td>
                       <td><?php echo $booking['booked_slots'] ?? '0'; ?></td>
                       <td><?php echo date('M d, H:i', strtotime($booking['start_time'] ?? 'now')); ?></td>
                       <td><?php echo date('M d, H:i', strtotime($booking['end_time'] ?? 'now')); ?></td>
@@ -250,10 +256,10 @@
   <script src="<?= BASE_URL ?>assets/js/bootstrap.bundle.min.js"></script>
   <script src="<?= BASE_URL ?>assets/js/owner.js"></script>
   <script>
-    // Dynamic chart data from PHP
-    const weeklyData = <?php echo json_encode($data['weeklyRevenue'] ?? [650, 720, 810, 940, 1120, 1340, 1280]); ?>;
-    const monthlyData = <?php echo json_encode($data['monthlyRevenue'] ?? [4850, 5320, 6780, 8140]); ?>;
-    const chartLabels = <?php echo json_encode($data['chartLabels'] ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']); ?>;
+    // Dynamic chart data from PHP - باستخدام المتغيرات الصحيحة
+    const weeklyData = <?php echo json_encode($weeklyRevenue ?? [650, 720, 810, 940, 1120, 1340, 1280]); ?>;
+    const monthlyData = <?php echo json_encode($monthlyRevenue ?? [4850, 5320, 6780, 8140]); ?>;
+    const chartLabels = <?php echo json_encode($chartLabels ?? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']); ?>;
     
     // Chart.js configuration
     const ctx = document.getElementById('revenueChart').getContext('2d');
@@ -305,7 +311,6 @@
       document.getElementById('weeklyBtn').classList.remove('active');
     }
 
-
     function refreshDashboard() {
       fetch('<?= BASE_URL ?>owner/getDashboardData', {
         method: 'GET',
@@ -314,35 +319,30 @@
       .then(response => response.json())
       .then(data => {
         if(data.success) {
-
           document.getElementById('lastUpdate').innerText = 'Last updated: ' + new Date().toLocaleTimeString();
-          
           
           document.querySelector('.earnings h2').innerHTML = '$' + parseFloat(data.totalearnings).toFixed(2) + 
             ' <span class="' + (data.earningsChange >= 0 ? 'up' : 'down') + '">' + 
             (data.earningsChange >= 0 ? '+' : '') + data.earningsChange + '%</span>';
           
-        
-          const totalBookings = data.activeBookings + data.pendingBookings;
+          const totalBookings = data.activeBookings + (data.pendingBookings || 0);
           document.querySelector('.bookings h2').innerHTML = totalBookings + 
             ' <span class="' + (data.bookingsChange >= 0 ? 'up' : 'down') + '">' + 
             (data.bookingsChange >= 0 ? '+' : '') + data.bookingsChange + '%</span>';
           document.querySelector('.bookings p').innerHTML = 'Active sessions: ' + data.activeBookings;
           
-
           document.querySelector('.occupancy h2').innerHTML = data.occupancyRate + '%' + 
             ' <span class="' + (data.occupancyChange >= 0 ? 'up' : 'down') + '">' + 
             (data.occupancyChange >= 0 ? '+' : '') + data.occupancyChange + '%</span>';
           document.getElementById('peakHourDisplay').innerText = data.peakHour;
           
-        
           if(data.recentBookings && data.recentBookings.length > 0) {
             let tableHtml = `<table class="table table-dark table-hover">
               <thead><tr><th>Parking Space</th><th>Booked Slots</th><th>Start Time</th><th>End Time</th><th>Amount</th><th>Status</th></tr></thead>
               <tbody>`;
             data.recentBookings.forEach(booking => {
               tableHtml += `<tr>
-                <td>${booking.name || booking.parking_name || 'N/A'}</td>
+                <td>${booking.parking_name || booking.name || 'N/A'}</td>
                 <td>${booking.booked_slots}</td>
                 <td>${new Date(booking.start_time).toLocaleString()}</td>
                 <td>${new Date(booking.end_time).toLocaleString()}</td>
@@ -354,7 +354,6 @@
             document.getElementById('recentBookingsTable').innerHTML = tableHtml;
           }
           
-          // Update notifications
           if(data.notifications && data.notifications.length > 0) {
             let notifHtml = '';
             data.notifications.forEach(notif => {
@@ -370,7 +369,6 @@
       .catch(error => console.error('Error refreshing dashboard:', error));
     }
 
-    
     setInterval(refreshDashboard, 30000);
 
     function openModal() {
@@ -379,6 +377,10 @@
 
     function closeModal() {
       document.getElementById('modal').style.display = 'none';
+    }
+
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('collapsed');
     }
 
     function toggleAttribute(btn) {
