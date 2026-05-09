@@ -2,454 +2,394 @@
 <html lang="en" dir="ltr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--* CSS Style Sheets -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/spots.css?v=1">
+  <!--* Font Awsome -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <title>Urban Space Management Dashboard</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        /* CSS Variables */
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-blue: #38bdf8;
-            --accent-green: #22c55e;
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-            --sidebar-width: 240px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* --- Sidebar Navigation --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #020617;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            z-index: 1000;
-            transition: transform 0.3s ease;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--accent-blue);
-            text-align: center;
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .nav-item {
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: var(--text-dim);
-            text-decoration: none;
-        }
-
-        .nav-item.active,
-        .nav-item:hover {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-blue);
-        }
-
-        /* --- Main Content --- */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
-            padding: 2rem;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3rem;
-        }
-
-        .search-bar {
-            background: var(--card-bg);
-            padding: 0.6rem 1.2rem;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 320px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .search-bar input {
-            background: none;
-            border: none;
-            color: white;
-            outline: none;
-            width: 100%;
-            font-size: 0.9rem;
-        }
-
-        /* --- Dashboard Cards --- */
-        .dashboard-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 40px;
-            padding: 2.5rem;
-            display: flex;
-            gap: 2.5rem;
-            align-items: center;
-            max-width: 950px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-        }
-
-        .card-img {
-            width: 40%;
-            height: 280px;
-            object-fit: cover;
-            border-radius: 32px;
-        }
-
-        .card-info {
-            flex: 1;
-        }
-
-        .space-id {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--accent-blue);
-            text-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
-            margin-bottom: 0.5rem;
-            font-family: monospace;
-        }
-
-        .tags {
-            display: flex;
-            gap: 12px;
-            margin: 1.2rem 0;
-        }
-
-        .tags span {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-blue);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .action-btn {
-            background: var(--accent-blue);
-            color: #020617;
-            border: none;
-            padding: 0.9rem 2.2rem;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1.5rem;
-            transition: 0.3s;
-        }
-
-        .action-btn:hover {
-            background: #7dd3fc;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-        }
-
-        /* --- Toggle Switch --- */
-        .control-panel {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 1.2rem;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-
-        .switch input {
-            display: none;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #334155;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: var(--accent-green);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(24px);
-        }
-
-        /* --- Modal Window --- */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 3rem;
-            border-radius: 40px;
-            width: 450px;
-            text-align: center;
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            cursor: pointer;
-            font-size: 1.8rem;
-            color: var(--text-dim);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .card-img {
-                width: 100%;
-                height: 220px;
-            }
-
-            .tags {
-                justify-content: center;
-            }
-
-            .control-panel {
-                justify-content: center;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-    <!-- Sidebar Navigation -->
-    <nav class="sidebar" id="sidebar">
-        <div class="logo">URBAN CORE</div>
-        <ul class="nav-links">
-            <li class="nav-item active" onclick="setActive(this)">
-                <i class="fa-solid fa-gauge-high"></i> Dashboard
-            </li>
-            <li class="nav-item" onclick="setActive(this)">
-                <i class="fa-solid fa-map"></i> Zone Mapping
-            </li>
-            <li class="nav-item" onclick="setActive(this)">
-                <i class="fa-solid fa-city"></i> Smart Spaces
-            </li>
-            <li class="nav-item" onclick="setActive(this)">
-                <i class="fa-solid fa-chart-simple"></i> Analytics
-            </li>
-            <li class="nav-item" onclick="setActive(this)">
-                <i class="fa-solid fa-sliders"></i> Settings
-            </li>
-        </ul>
-    </nav>
+    <div class="sidebar">
 
-    <!-- Main Workspace -->
-    <main class="main-content">
-        <header>
-            <div>
-                <h1>Urban Management</h1>
-                <p style="color: var(--text-dim);">Monitoring city zones in real-time</p>
-            </div>
-            <div class="search-bar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search areas, sensors...">
-            </div>
-        </header>
+<div class="sidebar-top">
+  <div class="sidebar-title">
+    <i class="fa-solid fa-square-parking"></i>
+    Urban Kinetic
+  </div>
 
-        <div class="dashboard-grid">
-            <!-- Card 1 -->
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=800"
-                    alt="CBD Area" class="card-img">
-                <div class="card-info">
-                    <div class="space-id">#102</div>
-                    <h3>Central Business District</h3>
-                    <div class="tags">
-                        <span>High Traffic</span>
-                        <span>Commercial</span>
-                    </div>
-                    <div class="control-panel">
-                        <span>Smart Lighting:</span>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <button class="action-btn" onclick="openModal('Central Business District')">View Insights</button>
-                </div>
-            </div>
+  <div class="sidebar-subtitle">Space Owner</div>
+</div>
 
-            <!-- Card 2 -->
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=800"
-                    alt="Residential Zone" class="card-img">
-                <div class="card-info">
-                    <div class="space-id">#085</div>
-                    <h3>North Residential Zone</h3>
-                    <div class="tags">
-                        <span>Low Noise</span>
-                        <span>Eco-Friendly</span>
-                    </div>
-                    <div class="control-panel">
-                        <span>Auto Irrigation:</span>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    <button class="action-btn" onclick="openModal('North Residential Zone')">View Insights</button>
-                </div>
-            </div>
-        </div>
-    </main>
 
-    <!-- Modal Details -->
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Area Analytics</h2>
-            <p style="margin: 1.5rem 0; color: var(--text-dim); line-height: 1.6;">
-                Accessing live telemetry from <strong id="zoneName" style="color: var(--accent-blue);"></strong>.
-                Data includes power consumption, pedestrian density, and air quality metrics.
-            </p>
-            <button class="action-btn" onclick="closeModal()" style="width: 100%;">Close Terminal</button>
-        </div>
+  <a href="dashboard.html" class="active" onclick="setActive(this)">
+    <i class="fa-solid fa-house"></i> Dashboard
+  </a>
+
+  <a href="spaces.html" onclick="setActive(this)">
+    <i class="fa-solid fa-building"></i> My Spaces
+  </a>
+
+  <a href="availability.html" onclick="setActive(this)">
+    <i class="fa-solid fa-calendar-days"></i> Availability
+  </a>
+
+  <a href="bookings.html" onclick="setActive(this)">
+    <i class="fa-solid fa-book"></i> Bookings
+  </a>
+
+  <a href="earnings.html" onclick="setActive(this)">
+    <i class="fa-solid fa-dollar-sign"></i> Earnings
+  </a>
+
+
+  <div class="sidebar-actions">
+    <button class="add-space-btn" onclick="openModal()">
+  <span class="icon">
+    <i class="fa-solid fa-plus"></i>
+  </span>
+  Add New Space
+</button>
+  </div>
+
+</div>
+
+
+<div class="main-content">
+
+<nav class="navbar px-4 py-3 f1">
+
+<div class="navbar-left">
+
+  <button class="show-sidebar-btn-inline" onclick="toggleSidebar()">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+
+  <input class="search f2" placeholder="Search Command Center...">
+
+</div>
+<div class="ms-auto d-flex align-items-center gap-3 f3">
+
+<a href="#" class="nav-link f15 f4">Analytics</a>
+<a href="#" class="nav-link f4">Reports</a>
+<a href="#" class="nav-link f4">Live Map</a>
+
+<button class="btn f5">Release All Slots</button>
+
+<a href="#"><i class="fa-regular fa-bell icon f6"></i></a>
+
+</div>
+
+</nav>
+<div class="header-row">
+
+  <div class="card-header-text">
+    <h2>Space Management</h2>
+    <p>
+      Oversee your urban parking assets, adjust pricing, and control real-time availability from a single interface.
+    </p>
+  </div>
+<div class="spaces-container">
+
+  <div class="space-box">
+    <div class="space-icon">
+      <i class="fa-solid fa-square-parking"></i>
     </div>
 
-    <script>
-        // Toggle Sidebar Active State
-        function setActive(element) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            element.classList.add('active');
-        }
+    <div class="space-title">Total Spaces</div>
+    <div class="space-number">42</div>
+  </div>
 
-        // Modal Controls
-        const modal = document.getElementById("detailsModal");
-        const zoneNameSpan = document.getElementById("zoneName");
+  <div class="space-box">
+    <div class="space-icon active-icon">
+      <i class="fa-solid fa-arrow-trend-up"></i>
+    </div>
 
-        function openModal(zoneName) {
-            zoneNameSpan.innerText = zoneName;
-            modal.style.display = "flex";
-        }
+    <div class="space-title">Active Now</div>
+    <div class="space-number active">38</div>
+  </div>
 
-        function closeModal() {
-            modal.style.display = "none";
-        }
+</div>
 
-        // Close on Outside Click
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
+</div>
 
-        // Sensor Toggle Notification
-        document.querySelectorAll('.switch input').forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const status = this.checked ? "ON" : "OFF";
-                console.log(`System Status: ${status}`);
-            });
-        });
-    </script>
+<div class="cards-container">
+  <div class="card">
+    <div class="card-img">
+      <img src="assets/images/smart-parking-system-with-automated-payment-space-management-without-physical-interaction_995578-22148.avif">
+    </div>
+
+    <div class="content">
+      <div class="header">
+        <i class="fas fa-crown"></i>
+        PREMIUM ZONE
+      </div>
+
+      <div class="title">Grand Central Underground</div>
+
+      <div class="info">
+        <span><i class="fas fa-map-marker-alt"></i> 42nd St, New York, NY</span>
+      </div>
+
+<div class="price">
+  <span>PRICE</span>
+  <span>
+    <span class="price-number">$12.50</span>
+    <span class="price-unit">/hr</span>
+  </span>
+</div>
+
+<div class="status">
+  <div class="dot"></div>
+  <span class="status-text">STATUS • Available</span>
+</div>
+
+<div class="toggle">
+  <span>Auto-Renewing Availability</span>
+  <div class="switch" id="toggle">
+    <span></span>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+
+ <div class="portfolio-card">
+
+
+  <div class="portfolio-icon">
+    <i class="fas fa-plus"></i>
+  </div>
+
+  <div class="portfolio-content">
+    <h3>Grow Your Portfolio</h3>
+    <p>
+      Instantly list a new parking bay or lot in under 2 minutes.
+    </p>
+  </div>
+
+
+  <button class="portfolio-btn">
+    <i class="fas fa-magic"></i> Launch Setup Wizard
+  </button>
+
+</div>
+
+</div>
+
+
+
+
+<div class="zones-card-container">
+
+ <div class="zones-wrapper">
+
+
+  <div class="zones-header">
+    <h2>Managed Zones</h2>
+
+    <div class="header-actions">
+      <button>FILTER BY CITY</button>
+      <button>SORT BY REVENUE</button>
+    </div>
+  </div>
+
+
+  <div class="zone-row">
+    
+    <img src="assets/images/OIP.webp" class="zone-img">
+
+    <div class="zone-info">
+      <h3>Brooklyn High-Rise Bay 14</h3>
+      <p>Zone B · Level 4 · Lot 1401</p>
+    </div>
+
+    <div class="zone-rate">
+      <span>HOURLY RATE</span>
+      <h4>$8.00</h4>
+    </div>
+
+    <div class="zone-occupancy">
+      <span>OCCUPANCY</span>
+
+      <div class="bar">
+        <div class="fill" style="width:64%"></div>
+      </div>
+
+      <small class="occupancy-value mid">64%</small>
+    </div>
+
+    <div class="zone-actions">
+      <label class="switch">
+        <input type="checkbox" checked>
+        <span></span>
+      </label>
+
+      <i class="fa fa-pen"></i>
+      <i class="fa fa-trash"></i>
+    </div>
+
+  </div>
+
+
+
+  <div class="zone-row">
+    
+    <img src="assets/images/OIP (2).webp" class="zone-img">
+
+    <div class="zone-info">
+      <h3>The Glass House Private Drive</h3>
+      <p>Zone A · Entrance 2</p>
+    </div>
+
+    <div class="zone-rate">
+      <span>HOURLY RATE</span>
+      <h4>$15.75</h4>
+    </div>
+
+    <div class="zone-occupancy">
+      <span>OCCUPANCY</span>
+
+      <div class="bar">
+        <div class="fill pink" style="width:100%"></div>
+      </div>
+
+      <small class="occupancy-value high">100%</small>
+    </div>
+
+    <div class="zone-actions">
+      <label class="switch">
+        <input type="checkbox" checked>
+        <span></span>
+      </label>
+
+      <i class="fa fa-pen"></i>
+      <i class="fa fa-trash"></i>
+    </div>
+
+  </div>
+
+
+  <div class="zone-row">
+    
+    <img src="assets/images/download.webp" class="zone-img">
+
+    <div class="zone-info">
+      <h3>Old Town Alley (Reserved)</h3>
+      <p>Zone C • Back Access</p>
+    </div>
+
+    <div class="zone-rate">
+      <span>HOURLY RATE</span>
+      <h4>$5.25</h4>
+    </div>
+
+    <div class="zone-occupancy">
+      <span>OCCUPANCY</span>
+
+      <div class="bar">
+        <div class="fill" style="width:0%"></div>
+      </div>
+      <small class="occupancy-value low">0%</small>
+    </div>
+
+    <div class="zone-actions">
+      <label class="switch">
+        <input type="checkbox" checked>
+        <span></span>
+      </label>
+
+      <i class="fa fa-pen"></i>
+      <i class="fa fa-trash"></i>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+
+
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+
+    <span class="close" onclick="closeModal()">×</span>
+
+    <h2 class="modal-title">New Space</h2>
+
+
+   <label>LOCATION REFERENCE</label>
+
+<div class="input-with-icon">
+  <i class="fa-solid fa-location-dot"></i>
+  <input type="text" placeholder="e.g. 5th Avenue Loft">
+</div>
+
+    <div class="row">
+      <div>
+        <label>PRICE PER HOUR</label>
+        <div class="input-with-icon">
+  <i class="fa-solid fa-dollar-sign"></i>
+  <input type="number" placeholder="0.00">
+</div>
+      </div>
+
+      <div>
+        <label>TOTAL SLOTS</label>
+        <input type="number" value="1">
+      </div>
+    </div>
+
+   <label>SPACE ATTRIBUTES</label>
+
+<div class="tags">
+  <button><i class="fa-solid fa-bolt"></i> EV Charging</button>
+
+  <button class="active">
+    <i class="fa-solid fa-shield-halved"></i> CCTV Security
+  </button>
+
+  <button>
+    <i class="fa-solid fa-wheelchair"></i> Disabled Access
+  </button>
+
+  <button>
+    <i class="fa-solid fa-warehouse"></i> Indoor
+  </button>
+</div>
+
+
+    <div class="toggle-box">
+      <div>
+        <h4>Instant Activation</h4>
+        <p>Listing will be live on the map immediately after verification.</p>
+      </div>
+      <label class="modal-switch">
+        <input type="checkbox" checked>
+        <span></span>
+      </label>
+    </div>
+
+   
+    <button class="submit">Register Space</button>
+
+  </div>
+</div>
+</body>
+
+
+<script src="<?= BASE_URL ?>assets/js/bootstrap.bundle.min.js"></script>
+  <script src="<?= BASE_URL ?>assets/js/spots.js"></script>
+
+    
 </body>
 
 </html>
