@@ -107,3 +107,16 @@ CREATE TABLE fines (
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+-- REAL-TIME BOOKING
+CREATE TABLE realtime_booking(
+    system_identity VARCHAR(100),
+
+    location VARCHAR(100) NOT NULL,
+
+    rent DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (system_identity) REFERENCES users(fullName) ON DELETE CASCADE,
+    FOREIGN KEY (rent) REFERENCES bookings(total_cost) ON DELETE CASCADE,
+    FOREIGN KEY (location) REFERENCES parking_spots(location) ON DELETE CASCADE
+);
