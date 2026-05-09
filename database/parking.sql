@@ -58,7 +58,6 @@ CREATE TABLE bookings (
     total_cost DECIMAL(10,2),
 
     status ENUM('pending','active','completed','cancelled') DEFAULT 'pending',
-    payment_status ENUM('pending','paid') DEFAULT 'pending',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
