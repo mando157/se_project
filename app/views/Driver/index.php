@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Welcome</title>
     <!--* CSS Style Sheets -->
-    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/driver.css?v=1">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/driver.css?v=1.1">
     <!--* Font Awsome -->
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css?v=1">
     <!-- Bootstrap 5 CSS -->
@@ -32,6 +32,7 @@
 
             <div class="nav-btn">
                 <a href="<?= BASE_URL ?>Driver/notify" class="notification-bell"><i class="fa-regular fa-bell"></i></a>
+                <h5><?= $user['name'] ?? '' ?></h5>
                 <a href="<?= BASE_URL ?>Driver/profile" class="profile"><img src="<?= BASE_URL ?>assets/images/Account.png"
                         alt=""></a>
                 <a href="<?= BASE_URL ?>Auth/logout" class="logout-btn">Logout</a>

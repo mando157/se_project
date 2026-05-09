@@ -19,6 +19,26 @@ class DriverController extends Controller
         ]);
     }
 
+    public function name()
+    {
+        $db = new Database();
+        $conn = $db->getConnection();
+
+        $user = Auth::user();
+        $user_id = $user['id'];
+
+        $stmt = $conn->prepare(
+            "SELECT name FROM users WHERE id = ?"
+        );
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+
+        echo json_encode(['name' => $data['name']]);
+    }
     public function map()
     {
         $db = new Database();
@@ -418,6 +438,7 @@ class DriverController extends Controller
         $user = Auth::user();
         $user_id = $user['id'];
 
+        // ================= NOTIFICATIONS =================
         $stmt = $conn->prepare(
             "SELECT n.*, p.spot_name
          FROM notifications n
@@ -431,15 +452,40 @@ class DriverController extends Controller
 
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
+
         $result = $stmt->get_result();
+
         $notifications = [];
 
         while ($row = mysqli_fetch_assoc($result)) {
             $notifications[] = $row;
         }
 
+        // ================= ACTIVE BOOKING =================
+        $stmt = $conn->prepare(
+            "SELECT b.*, p.spot_name
+         FROM bookings b
+         JOIN parking_spots p
+         ON b.spot_id = p.spot_id
+         WHERE b.user_id = ?
+         AND b.status = 'paid'
+         ORDER BY b.booking_id DESC
+         LIMIT 1"
+        );
+
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        $booking =
+            $stmt->get_result()->fetch_assoc();
+
+        // ================= VIEW =================
         $this->view("driver/notify", [
-            'notifications' => $notifications
+
+            'notifications' => $notifications,
+
+            'booking' => $booking
+
         ]);
     }
 }

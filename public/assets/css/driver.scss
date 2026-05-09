@@ -107,6 +107,13 @@ body {
                 height: 37px;
             }
 
+
+            h5{
+                margin: 0;
+                color: $text-color;
+                font-size: 14px;
+            }
+
             .logout-btn {
                 padding: 8px 16px;
                 background: $gradiant-btn-color;

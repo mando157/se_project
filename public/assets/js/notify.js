@@ -1,31 +1,67 @@
-// function updateTimer() {
-//     let now = new Date();
-//     let today =
-//         now.toISOString().split('T')[0];
-//     let end =
-//         new Date(today + "T" + endTime);
-//     let diff =
-//         Math.floor((end - now) / 1000);
+function updateTimer() {
 
-//     if (diff <= 0) {
-//         document.getElementById("timer")
-//         .innerText = "Expired";
-//         return;
-//     }
+    if (!startTime || !endTime || !bookingDate) {
+        return;
+    }
 
-//     let hours =
-//         Math.floor(diff / 3600);
-//     let minutes =
-//         Math.floor((diff % 3600) / 60);
-//     let seconds =
-//         diff % 60;
+    let now = new Date();
 
-//     document.getElementById("timer")
-//     .innerText =
-//         `${String(hours).padStart(2, '0')}:` +
-//         `${String(minutes).padStart(2, '0')}:` +
-//         `${String(seconds).padStart(2, '0')}`;
-// }
+    let start =
+        new Date(
+            bookingDate + "T" + startTime
+        );
 
-// setInterval(updateTimer, 1000);
-// updateTimer();
+    let end =
+        new Date(
+            bookingDate + "T" + endTime
+        );
+
+    // لو end أقل من start
+    // معناها معدي نص الليل
+    if (end <= start) {
+        end.setDate(end.getDate() + 1);
+    }
+
+    // قبل البداية
+    if (now < start) {
+
+        document.getElementById("timer")
+            .innerText =
+            "Waiting For Booking Time";
+
+        return;
+    }
+
+    // بعد النهاية
+    if (now >= end) {
+
+        document.getElementById("timer")
+            .innerText =
+            "Expired";
+
+        return;
+    }
+
+    // أثناء الحجز
+    let diff =
+        Math.floor((end - now) / 1000);
+
+    let hours =
+        Math.floor(diff / 3600);
+
+    let minutes =
+        Math.floor((diff % 3600) / 60);
+
+    let seconds =
+        diff % 60;
+
+    document.getElementById("timer")
+        .innerText =
+        `${String(hours).padStart(2, '0')}:` +
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}`;
+}
+
+setInterval(updateTimer, 1000);
+
+updateTimer();

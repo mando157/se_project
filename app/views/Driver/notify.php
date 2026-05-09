@@ -95,7 +95,7 @@
                         <h2>
                             <?= $booking['spot_name'] ?? 'No active session'; ?>
                         </h2>
-                        <p>Level 3 • Spot B-14</p>
+                        <p>Level <?= $booking['level'] ?? '' ?> • Spot B-14</p>
 
                         <div class="timer" id="timer">
                             <?= $booking['duration'] ?? '00:00:00' ?>
@@ -106,12 +106,18 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
+
+            const bookingDate =
+                "<?= $booking['date'] ?? '' ?>";
+
             const startTime =
-                "<?= $booking['start_time'] ?? '00:00:00' ?>";
+                "<?= $booking['start_time'] ?? '' ?>";
+
             const endTime =
-                "<?= $booking['end_time'] ?? '00:00:00' ?>";
+                "<?= $booking['end_time'] ?? '' ?>";
+
         </script>
         <script src="<?= BASE_URL ?>assets/js/notify.js?<?= time() ?>"></script>
 </body>
