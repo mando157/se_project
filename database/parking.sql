@@ -58,7 +58,6 @@ CREATE TABLE bookings (
     total_cost DECIMAL(10,2),
 
     status ENUM('pending','active','completed','cancelled') DEFAULT 'pending',
-    payment_status ENUM('pending','paid') DEFAULT 'pending',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -71,6 +70,7 @@ CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
     user_id INT NOT NULL,
+    booking_id INT NOT NULL,
 
     title VARCHAR(255),
     message TEXT,
@@ -81,7 +81,13 @@ CREATE TABLE notifications (
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) 
+    REFERENCES users(id) 
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (booking_id) 
+    REFERENCES bookings(booking_id)
+    ON DELETE CASCADE
 );
 
 -- FINES
@@ -100,4 +106,17 @@ CREATE TABLE fines (
 
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- REAL-TIME BOOKING
+CREATE TABLE realtime_booking(
+    system_identity VARCHAR(100),
+
+    location VARCHAR(100) NOT NULL,
+
+    rent DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (system_identity) REFERENCES users(fullName) ON DELETE CASCADE,
+    FOREIGN KEY (rent) REFERENCES bookings(total_cost) ON DELETE CASCADE,
+    FOREIGN KEY (location) REFERENCES parking_spots(location) ON DELETE CASCADE
 );
