@@ -12,7 +12,7 @@
   <!-- Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
-  <title>Find Parking</title>
+  <title>Live Map — ParkFlow</title>
 </head>
 
 <body>
@@ -36,10 +36,12 @@
 
     <!-- LEFT -->
     <div class="left">
-
       <div class="search-box">
-        <span class="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Search parking location...">
+        <span class="material-symbols-outlined">
+          search
+        </span>
+
+        <input type="text" id="searchInput" placeholder="Search parking location...">
       </div>
 
       <div class="filters">
@@ -57,10 +59,10 @@
         <?php if (!empty($spots)) { ?>
           <?php foreach ($spots as $row) { ?>
 
-            <div class="card">
+            <div class="card parking-card">
               <div class="card-top">
                 <div>
-                  <h4><?= $row['spot_name']; ?></h4>
+                  <h4 class="parking-name"><?= $row['spot_name']; ?></h4>
                   <p>Distance will be calculated later</p>
                 </div>
 
@@ -92,6 +94,8 @@
     </div>
 
   </div>
+
+  <script src="<?= BASE_URL ?>assets/js/map.js"></script>
 
 </body>
 
