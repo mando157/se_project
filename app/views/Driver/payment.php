@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>UrbanKinetic Checkout</title>
+    <title>UrbanKinetic Secure Checkout — ParkFlow</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/payment.css?v=1">

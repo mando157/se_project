@@ -21,7 +21,7 @@ class OwnerController extends Controller
         ]);
     }
 
-public function dashboard()
+    public function dashboard()
     {
         $db = new Database();
         $conn = $db->getConnection();
@@ -41,7 +41,7 @@ public function dashboard()
         $stmt->execute();
         $totalSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-   
+
         $totalEarningsQuery = "SELECT SUM(amount) as total FROM bookings b 
                                JOIN parking_spots p ON b.parking_spot_id = p.id 
                                WHERE p.owner_id = ? AND b.status = 'completed'";
@@ -50,7 +50,7 @@ public function dashboard()
         $stmt->execute();
         $totalEarnings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-        
+
         $activeBookingsQuery = "SELECT COUNT(*) as total FROM bookings b 
                                 JOIN parking_spots p ON b.parking_spot_id = p.id 
                                 WHERE p.owner_id = ? AND b.status = 'active'";
@@ -59,7 +59,7 @@ public function dashboard()
         $stmt->execute();
         $activeBookings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-        
+
         $pendingBookingsQuery = "SELECT COUNT(*) as total FROM bookings b 
                                  JOIN parking_spots p ON b.parking_spot_id = p.id 
                                  WHERE p.owner_id = ? AND b.status = 'pending'";
@@ -68,7 +68,7 @@ public function dashboard()
         $stmt->execute();
         $pendingBookings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
 
-       
+
         $bookedSlotsQuery = "SELECT SUM(b.booked_slots) as total FROM bookings b 
                              JOIN parking_spots p ON b.parking_spot_id = p.id 
                              WHERE p.owner_id = ? AND b.status = 'active' 
@@ -77,10 +77,10 @@ public function dashboard()
         $stmt->bind_param("i", $owner_id);
         $stmt->execute();
         $bookedSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-        
+
         $occupancyRate = ($totalSlots > 0) ? round(($bookedSlots / $totalSlots) * 100, 1) : 0;
 
-      
+
         $recentBookingsQuery = "SELECT b.*, p.name as parking_name FROM bookings b 
                                 JOIN parking_spots p ON b.parking_spot_id = p.id 
                                 WHERE p.owner_id = ? 
@@ -90,7 +90,7 @@ public function dashboard()
         $stmt->execute();
         $recentBookings = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    
+
         $notificationsQuery = "SELECT * FROM notifications 
                                WHERE owner_id = ? 
                                ORDER BY created_at DESC LIMIT 5";
@@ -99,7 +99,7 @@ public function dashboard()
         $stmt->execute();
         $notifications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-     
+
         $this->view("owner/dashboard", [
             'totalSpaces' => $totalSpaces,
             'totalSlots' => $totalSlots,
