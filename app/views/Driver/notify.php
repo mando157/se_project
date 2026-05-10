@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>ParkFlow Notifications</title>
+    <title>Notifications — ParkFlow</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/notify.css">
@@ -90,7 +90,7 @@
                 <div class="col-md-4">
 
                     <!-- ===== SESSION CARD ===== -->
-                    <div class="session-card">
+                    <div class="session-card" id="session-card">
                         <h4>Active Session</h4>
                         <h2>
                             <?= $booking['spot_name'] ?? 'No active session'; ?>

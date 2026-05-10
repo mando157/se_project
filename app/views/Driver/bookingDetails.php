@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/booking-details.css">
 
-    <title>Booking Details</title>
+    <title>Booking Details — ParkFlow</title>
 </head>
 
 <body>

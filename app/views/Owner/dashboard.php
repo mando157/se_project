@@ -2,8 +2,16 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+
+  
+   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--* CSS Style Sheets -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/owner.css?v=1">
+  <!--* Font Awsome -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/bootstrap.min.css">
   <title>Owner Dashboard | Urban Kinetic</title>
 </head>
 

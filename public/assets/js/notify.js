@@ -16,13 +16,10 @@ function updateTimer() {
             bookingDate + "T" + endTime
         );
 
-    // لو end أقل من start
-    // معناها معدي نص الليل
     if (end <= start) {
         end.setDate(end.getDate() + 1);
     }
 
-    // قبل البداية
     if (now < start) {
 
         document.getElementById("timer")
@@ -32,17 +29,18 @@ function updateTimer() {
         return;
     }
 
-    // بعد النهاية
     if (now >= end) {
 
         document.getElementById("timer")
             .innerText =
             "Expired";
+        
+        document.getElementById("session-card")
+            .style.background = "#dc3545";
 
         return;
     }
 
-    // أثناء الحجز
     let diff =
         Math.floor((end - now) / 1000);
 

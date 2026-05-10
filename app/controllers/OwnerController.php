@@ -4,452 +4,470 @@ require_once "../app/helpers/Auth.php";
 
 class OwnerController extends Controller
 {
-    private $ownerModel;
-
+    private $conn;
+    
     public function __construct()
     {
         Auth::redirectIfNotLogged();
         Auth::forbidIfNotRole('owner');
+        
+        $database = Database::getInstance();
+        $this->conn = $database->getConnection();
     }
-
+    
     public function index()
     {
-        $user = Auth::user();
-
-        $this->view("Owner/index", [
-            'user' => $user
-        ]);
+        $this->dashboard();
     }
-
-public function dashboard()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-        $owner = Auth::user();
-        $owner_id = $owner['id'];
-
-        $totalSpacesQuery = "SELECT COUNT(*) as total FROM parking_spots WHERE owner_id = ?";
-        $stmt = $conn->prepare($totalSpacesQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $totalSpaces = $stmt->get_result()->fetch_assoc()['total'];
-
-
-        $totalSlotsQuery = "SELECT SUM(total_slots) as total FROM parking_spots WHERE owner_id = ?";
-        $stmt = $conn->prepare($totalSlotsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $totalSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-   
-        $totalEarningsQuery = "SELECT SUM(amount) as total FROM bookings b 
-                               JOIN parking_spots p ON b.parking_spot_id = p.id 
-                               WHERE p.owner_id = ? AND b.status = 'completed'";
-        $stmt = $conn->prepare($totalEarningsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $totalEarnings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-        
-        $activeBookingsQuery = "SELECT COUNT(*) as total FROM bookings b 
-                                JOIN parking_spots p ON b.parking_spot_id = p.id 
-                                WHERE p.owner_id = ? AND b.status = 'active'";
-        $stmt = $conn->prepare($activeBookingsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $activeBookings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-        
-        $pendingBookingsQuery = "SELECT COUNT(*) as total FROM bookings b 
-                                 JOIN parking_spots p ON b.parking_spot_id = p.id 
-                                 WHERE p.owner_id = ? AND b.status = 'pending'";
-        $stmt = $conn->prepare($pendingBookingsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $pendingBookings = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-       
-        $bookedSlotsQuery = "SELECT SUM(b.booked_slots) as total FROM bookings b 
-                             JOIN parking_spots p ON b.parking_spot_id = p.id 
-                             WHERE p.owner_id = ? AND b.status = 'active' 
-                             AND NOW() BETWEEN b.start_time AND b.end_time";
-        $stmt = $conn->prepare($bookedSlotsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $bookedSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-        
-        $occupancyRate = ($totalSlots > 0) ? round(($bookedSlots / $totalSlots) * 100, 1) : 0;
-
-      
-        $recentBookingsQuery = "SELECT b.*, p.name as parking_name FROM bookings b 
-                                JOIN parking_spots p ON b.parking_spot_id = p.id 
-                                WHERE p.owner_id = ? 
-                                ORDER BY b.created_at DESC LIMIT 5";
-        $stmt = $conn->prepare($recentBookingsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $recentBookings = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
     
-        $notificationsQuery = "SELECT * FROM notifications 
-                               WHERE owner_id = ? 
-                               ORDER BY created_at DESC LIMIT 5";
-        $stmt = $conn->prepare($notificationsQuery);
-        $stmt->bind_param("i", $owner_id);
-        $stmt->execute();
-        $notifications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-     
-        $this->view("owner/dashboard", [
-            'totalSpaces' => $totalSpaces,
-            'totalSlots' => $totalSlots,
+    private function getOwnerId()
+    {
+        $user = Auth::user();
+        return $user['id'] ?? 0;
+    }
+    
+    public function dashboard()
+    {
+        $ownerId = $this->getOwnerId();
+        
+        $totalEarnings = $this->getTotalEarnings($ownerId);
+        $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
+        $earningsChange = $this->calculatePercentageChange($lastMonthEarnings, $totalEarnings);
+        
+        $activeBookings = $this->getActiveBookingsCount($ownerId);
+        $pendingBookings = $this->getPendingBookingsCount($ownerId);
+        $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
+        $bookingsChange = $this->calculatePercentageChange($prevActiveBookings, $activeBookings);
+        
+        $totalSlots = $this->getTotalSlots($ownerId);
+        $occupiedSlots = $this->getOccupiedSlots($ownerId);
+        $occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
+        $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
+        $occupancyChange = $this->calculatePercentageChange($prevOccupancyRate, $occupancyRate);
+        
+        $peakHour = $this->getPeakHour($ownerId);
+        $weeklyRevenue = $this->getWeeklyRevenue($ownerId);
+        $monthlyRevenue = $this->getMonthlyRevenue($ownerId);
+        $recentBookings = $this->getRecentBookings($ownerId);
+        $notifications = $this->getNotifications($ownerId);
+        
+        $this->view("Owner/dashboard", [
             'totalEarnings' => $totalEarnings,
+            'lastMonthEarnings' => $lastMonthEarnings,
+            'earningsChange' => $earningsChange,
             'activeBookings' => $activeBookings,
             'pendingBookings' => $pendingBookings,
+            'bookingsChange' => $bookingsChange,
             'occupancyRate' => $occupancyRate,
+            'occupancyChange' => $occupancyChange,
+            'peakHour' => $peakHour,
+            'weeklyRevenue' => $weeklyRevenue,
+            'monthlyRevenue' => $monthlyRevenue,
             'recentBookings' => $recentBookings,
             'notifications' => $notifications
         ]);
     }
-
-
-
-public function availability()
-{
-    /*
-    =====================================
-    STEP 1) Connect to database
-    =====================================
-    */
-    $db = new Database();
-    $conn = $db->getConnection();
-
-
-    /*
-    =====================================
-    STEP 2) Get logged owner
-    =====================================
-    */
-    $owner = Auth::user();
-    $owner_id = $owner['id'];
-
-
-    /*
-    =====================================
-    STEP 3) Get owner parking spaces
-    =====================================
-    */
-    $spacesQuery = "
-        SELECT *
-        FROM parking_spots
-        WHERE owner_id = ?
-        ORDER BY created_at DESC
-    ";
-
-    $stmt = $conn->prepare($spacesQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $spaces = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
-
-    /*
-    =====================================
-    STEP 4) Get slots for each space
-    =====================================
-    */
-    foreach ($spaces as &$space) {
-
-        $slotQuery = "
-            SELECT *
-            FROM slots
-            WHERE spot_id = ?
-            ORDER BY slot_id ASC
-        ";
-
-        $slotStmt = $conn->prepare($slotQuery);
-        $slotStmt->bind_param("i", $space['spot_id']);
-        $slotStmt->execute();
-
-        $space['slots'] = $slotStmt
-            ->get_result()
-            ->fetch_all(MYSQLI_ASSOC);
+    
+    private function getTotalEarnings($ownerId)
+    {
+        $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? AND b.status IN ('active', 'completed')";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (float)($row['total'] ?? 0);
     }
-
-    unset($space);
-
-
-    /*
-    =====================================
-    STEP 5) Available slots count
-    =====================================
-    */
-    $availableQuery = "
-        SELECT COUNT(*) as total
-        FROM slots s
-        JOIN parking_spots p ON s.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        AND s.status = 'active'
-    ";
-
-    $stmt = $conn->prepare($availableQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $availableSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 6) Booked slots count
-    =====================================
-    */
-    $bookedQuery = "
-        SELECT COUNT(*) as total
-        FROM slots s
-        JOIN parking_spots p ON s.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        AND s.status = 'booked'
-    ";
-
-    $stmt = $conn->prepare($bookedQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $bookedSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 7) Blocked slots count
-    =====================================
-    */
-    $blockedQuery = "
-        SELECT COUNT(*) as total
-        FROM slots s
-        JOIN parking_spots p ON s.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        AND s.status = 'blocked'
-    ";
-
-    $stmt = $conn->prepare($blockedQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $blockedSlots = $stmt->get_result()->fetch_assoc()['total'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 8) Total slots
-    =====================================
-    */
-    $totalSlots = $availableSlots + $bookedSlots + $blockedSlots;
-
-
-    /*
-    =====================================
-    STEP 9) Occupancy Rate
-    =====================================
-    */
-    $occupancyRate = 0;
-
-    if ($totalSlots > 0) {
-        $occupancyRate = round(($bookedSlots / $totalSlots) * 100, 2);
+    
+    private function getLastMonthEarnings($ownerId)
+    {
+        $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? 
+                    AND b.status IN ('active', 'completed')
+                    AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (float)($row['total'] ?? 0);
     }
-
-
-    /*
-    =====================================
-    STEP 10) Default current space
-    =====================================
-    */
-    $currentSpaceName = !empty($spaces)
-        ? $spaces[0]['spot_name']
-        : "No Space Available";
-
-
-    /*
-    =====================================
-    STEP 11) Temporary chart data
-    =====================================
-    */
-    $chartData = [65, 59, 80, 81, 56, 72, 90];
-
-
-    /*
-    =====================================
-    STEP 12) Load view
-    =====================================
-    */
-    $this->view("owner/Availability", [
-        'owner' => $owner,
-        'spaces' => $spaces,
-        'availableSlots' => $availableSlots,
-        'bookedSlots' => $bookedSlots,
-        'blockedSlots' => $blockedSlots,
-        'totalSlots' => $totalSlots,
-        'occupancyRate' => $occupancyRate,
-        'currentSpaceName' => $currentSpaceName,
-        'chartData' => $chartData
-    ]);
-}
-
-public function Earnings()
-{
-    /*
-    =====================================
-    STEP 1: Connect to database
-    Why?
-    Needed to fetch earnings data
-    =====================================
-    */
-    $db = new Database();
-    $conn = $db->getConnection();
-
-
-    /*
-    =====================================
-    STEP 2: Get logged owner
-    Why?
-    So owner only sees his own data
-    =====================================
-    */
-    $owner = Auth::user();
-    $owner_id = $owner['id'];
-
-
-    /*
-    =====================================
-    STEP 3: Calculate Total Revenue
-    Why?
-    Sum all completed + paid bookings
-    =====================================
-    */
-    $revenueQuery = "
-        SELECT SUM(total_cost) AS totalRevenue
-        FROM bookings b
-        JOIN parking_spots p
-        ON b.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        AND b.status = 'completed'
-        AND b.payment_status = 'paid'
-    ";
-
-    $stmt = $conn->prepare($revenueQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $totalRevenue = $stmt
-        ->get_result()
-        ->fetch_assoc()['totalRevenue'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 4: Count Active Spaces
-    Why?
-    Display active spaces card
-    =====================================
-    */
-    $spacesQuery = "
-        SELECT COUNT(*) AS activeSpaces
-        FROM parking_spots
-        WHERE owner_id = ?
-        AND status = 'active'
-    ";
-
-    $stmt = $conn->prepare($spacesQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $activeSpaces = $stmt
-        ->get_result()
-        ->fetch_assoc()['activeSpaces'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 5: Calculate Pending Payout
-    Why?
-    Money not paid yet
-    =====================================
-    */
-    $pendingQuery = "
-        SELECT SUM(total_cost) AS pendingPayout
-        FROM bookings b
-        JOIN parking_spots p
-        ON b.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        AND b.payment_status = 'pending'
-    ";
-
-    $stmt = $conn->prepare($pendingQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $pendingPayout = $stmt
-        ->get_result()
-        ->fetch_assoc()['pendingPayout'] ?? 0;
-
-
-    /*
-    =====================================
-    STEP 6: Weekly Revenue Chart Data
-    Why?
-    Used for revenue graph
-    Static حاليا
-    Later can be dynamic
-    =====================================
-    */
-    $chartData = [8500, 9200, 10100, 12400, 9800, 7500, 6900];
-
-
-    /*
-    =====================================
-    STEP 7: Get Recent Transactions
-    Why?
-    Show latest bookings/revenue activity
-    =====================================
-    */
-    $transactionsQuery = "
-        SELECT
-            b.booking_id,
-            b.total_cost,
-            b.payment_status,
-            b.created_at,
-            p.spot_name
-        FROM bookings b
-        JOIN parking_spots p
-        ON b.spot_id = p.spot_id
-        WHERE p.owner_id = ?
-        ORDER BY b.created_at DESC
-        LIMIT 5
-    ";
-
-    $stmt = $conn->prepare($transactionsQuery);
-    $stmt->bind_param("i", $owner_id);
-    $stmt->execute();
-
-    $transactions = $stmt
-        ->get_result()
-        ->fetch_all(MYSQLI_ASSOC);
-
-
-    /*
-    =====================================
-    STEP 8: Send all data to view
-    Why?
-    So earnings page can display data
-    =====================================
-    */
-    $this->view("owner/earnings", [
-        'owner' => $owner,
-        'totalRevenue' => $totalRevenue,
-        'activeSpaces' => $activeSpaces,
-        'pendingPayout' => $pendingPayout,
-        'chartData' => $chartData,
-        'transactions' => $transactions
-    ]);
-}
+    
+    private function getActiveBookingsCount($ownerId)
+    {
+        $query = "SELECT COUNT(*) as count 
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? AND b.status = 'active'";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int)($row['count'] ?? 0);
+    }
+    
+    private function getPendingBookingsCount($ownerId)
+    {
+        $query = "SELECT COUNT(*) as count 
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? AND b.status = 'pending'";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int)($row['count'] ?? 0);
+    }
+    
+    private function getPreviousActiveBookingsCount($ownerId)
+    {
+        $query = "SELECT COUNT(*) as count 
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? 
+                    AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int)($row['count'] ?? 0);
+    }
+    
+    private function getTotalSlots($ownerId)
+    {
+        $query = "SELECT COALESCE(SUM(total_slots), 0) as total 
+                  FROM parking_spots
+                  WHERE owner_id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int)($row['total'] ?? 0);
+    }
+    
+    private function getOccupiedSlots($ownerId)
+    {
+        $query = "SELECT COUNT(DISTINCT b.booking_id) as occupied
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? AND b.status = 'active'";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        return (int)($row['occupied'] ?? 0);
+    }
+    
+    private function getPreviousOccupancyRate($ownerId)
+    {
+        $query = "SELECT COUNT(DISTINCT b.booking_id) as occupied
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ? 
+                    AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return 0;
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        $totalSlots = $this->getTotalSlots($ownerId);
+        $occupied = (int)($row['occupied'] ?? 0);
+        
+        return $totalSlots > 0 ? round(($occupied / $totalSlots) * 100, 1) : 0;
+    }
+    
+    private function getPeakHour($ownerId)
+    {
+        $query = "SELECT HOUR(CONCAT(b.date, ' ', b.start_time)) as hour, COUNT(*) as count
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ?
+                  GROUP BY HOUR(CONCAT(b.date, ' ', b.start_time))
+                  ORDER BY count DESC
+                  LIMIT 1";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return '14:00 - 16:00';
+        }
+        $stmt->bind_param("i", $ownerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        
+        if ($row && isset($row['hour'])) {
+            $hour = (int)$row['hour'];
+            return sprintf('%02d:00 - %02d:00', $hour, $hour + 2);
+        }
+        return '14:00 - 16:00';
+    }
+    
+    private function getWeeklyRevenue($ownerId)
+    {
+        $weekly = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total
+                      FROM bookings b
+                      INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                      WHERE ps.owner_id = ? 
+                        AND b.date = ?
+                        AND b.status IN ('active', 'completed')";
+            
+            $stmt = $this->conn->prepare($query);
+            if (!$stmt) {
+                $weekly[] = 0;
+                continue;
+            }
+            $stmt->bind_param("is", $ownerId, $date);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            
+            $weekly[] = (float)($row['total'] ?? 0);
+        }
+        return $weekly;
+    }
+    
+    private function getMonthlyRevenue($ownerId)
+    {
+        $monthly = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $monthStart = date('Y-m-01', strtotime("-$i months"));
+            $monthEnd = date('Y-m-t', strtotime("-$i months"));
+            
+            $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total
+                      FROM bookings b
+                      INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                      WHERE ps.owner_id = ? 
+                        AND b.date BETWEEN ? AND ?
+                        AND b.status IN ('active', 'completed')";
+            
+            $stmt = $this->conn->prepare($query);
+            if (!$stmt) {
+                $monthly[] = 0;
+                continue;
+            }
+            $stmt->bind_param("iss", $ownerId, $monthStart, $monthEnd);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            
+            $monthly[] = (float)($row['total'] ?? 0);
+        }
+        return $monthly;
+    }
+    
+    private function getRecentBookings($ownerId, $limit = 10)
+    {
+        $query = "SELECT b.*, b.location as spot_name
+                  FROM bookings b
+                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+                  WHERE ps.owner_id = ?
+                  ORDER BY b.created_at DESC
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->bind_param("ii", $ownerId, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $bookings = [];
+        while ($row = $result->fetch_assoc()) {
+            $row['booked_slots'] = 1;
+            $bookings[] = $row;
+        }
+        $stmt->close();
+        
+        return $bookings;
+    }
+    
+    private function getNotifications($ownerId, $limit = 10)
+    {
+        $query = "SELECT * FROM notifications 
+                  WHERE user_id = ? 
+                  ORDER BY created_at DESC 
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            return [];
+        }
+        $stmt->bind_param("ii", $ownerId, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $notifications = [];
+        while ($row = $result->fetch_assoc()) {
+            $notifications[] = $row;
+        }
+        $stmt->close();
+        
+        return $notifications;
+    }
+    
+    private function calculatePercentageChange($oldValue, $newValue)
+    {
+        if ($oldValue == 0) return $newValue > 0 ? 100 : 0;
+        return round((($newValue - $oldValue) / $oldValue) * 100, 1);
+    }
+    
+    public function getDashboardData()
+    {
+        $ownerId = $this->getOwnerId();
+        
+        $totalEarnings = $this->getTotalEarnings($ownerId);
+        $activeBookings = $this->getActiveBookingsCount($ownerId);
+        $pendingBookings = $this->getPendingBookingsCount($ownerId);
+        $totalSlots = $this->getTotalSlots($ownerId);
+        $occupiedSlots = $this->getOccupiedSlots($ownerId);
+        $occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
+        $peakHour = $this->getPeakHour($ownerId);
+        
+        $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
+        $earningsChange = $this->calculatePercentageChange($lastMonthEarnings, $totalEarnings);
+        
+        $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
+        $bookingsChange = $this->calculatePercentageChange($prevActiveBookings, $activeBookings);
+        
+        $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
+        $occupancyChange = $this->calculatePercentageChange($prevOccupancyRate, $occupancyRate);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'totalearnings' => $totalEarnings,
+            'activeBookings' => $activeBookings,
+            'pendingBookings' => $pendingBookings,
+            'occupancyRate' => $occupancyRate,
+            'peakHour' => $peakHour,
+            'earningsChange' => $earningsChange,
+            'bookingsChange' => $bookingsChange,
+            'occupancyChange' => $occupancyChange
+        ]);
+    }
+    
+    public function markNotificationsRead()
+    {
+        $ownerId = $this->getOwnerId();
+        
+        $query = "UPDATE notifications SET is_read = 1 WHERE user_id = ?";
+        $stmt = $this->conn->prepare($query);
+        if ($stmt) {
+            $stmt->bind_param("i", $ownerId);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+    }
+    
+    public function notifications()
+    {
+        $ownerId = $this->getOwnerId();
+        $notifications = $this->getNotifications($ownerId, 50);
+        
+        $this->view("Owner/notifications", [
+            'notifications' => $notifications
+        ]);
+    }
+    
+    public function bookings()
+    {
+        $ownerId = $this->getOwnerId();
+        $bookings = $this->getRecentBookings($ownerId, 50);
+        
+        $this->view("Owner/bookings", [
+            'bookings' => $bookings
+        ]);
+    }
+    
+    public function spaces()
+    {
+        $ownerId = $this->getOwnerId();
+        
+        $query = "SELECT * FROM parking_spots WHERE owner_id = ?";
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            $spaces = [];
+        } else {
+            $stmt->bind_param("i", $ownerId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $spaces = [];
+            while ($row = $result->fetch_assoc()) {
+                $spaces[] = $row;
+            }
+            $stmt->close();
+        }
+        
+        $this->view("Owner/spaces", [
+            'spaces' => $spaces
+        ]);
+    }
 }
