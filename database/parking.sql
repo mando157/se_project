@@ -74,18 +74,16 @@ CREATE TABLE notifications (
 
     title VARCHAR(255),
     message TEXT,
-    type VARCHAR(20),
-    time VARCHAR(20),
 
     is_read BOOLEAN DEFAULT 0,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (user_id) 
-    REFERENCES users(id) 
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
     ON DELETE CASCADE,
 
-    FOREIGN KEY (booking_id) 
+    FOREIGN KEY (booking_id)
     REFERENCES bookings(booking_id)
     ON DELETE CASCADE
 );
