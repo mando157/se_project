@@ -56,30 +56,21 @@
 <h2 class="section-title">Real-time Bookings</h2>
 
 <table>
-<tr>
-<th>System Identity</th>
-<th>Location</th>
-<th>Rent</th>
-</tr>
+    <tr>
+        <th>User</th>
+        <th>Location</th>
+        <th>Rent</th>
+    </tr>
 
-<tr>
-<td>James Smith</td>
-<td>North Plaza</td>
-<td>25.30$</td>
+    <?php foreach($bookings as $booking): ?>
 
-</tr>
+    <tr>
+        <td><?= $booking['system_identity'] ?></td>
+        <td><?= $booking['location'] ?></td>
+        <td><?= $booking['rent'] ?></td>
+    </tr>
 
-<tr>
-<td>Alice Miller</td>
-<td>Underground A14</td>
-<td>12.00$</td>
-</tr>
-
-<tr>
-<td>Robert Kane</td>
-<td>Downtown Garage</td>
-<td>42.50$</td>
-</tr>
+    <?php endforeach; ?>
 </table>
 
 

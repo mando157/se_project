@@ -187,7 +187,7 @@
 
         .table-row {
             display: grid;
-            grid-template-columns: 120px repeat(7, 1fr);
+             grid-template-columns: 120px repeat(auto-fit, minmax(45px, 1fr));
             gap: 10px;
             align-items: center;
             margin-bottom: 12px;
@@ -261,6 +261,11 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            .sidebar-nav li a {
+                 text-decoration: none;
+                  color: inherit;
+                 display: block;
+}
         }
     </style>
 </head>
@@ -276,11 +281,11 @@
 
             <nav class="sidebar-nav">
                 <ul>
-                    <li>Dashboard</li>
-                    <li>My Spaces</li>
-                    <li class="active">Availability</li>
-                    <li>Bookings</li>
-                    <li>Earnings</li>
+                    <<li><a href="/owner/dashboard">Dashboard</a></li>
+                    <li><a href="/owner/myspaces">My Spaces</a></li>
+                    <li class="active"><a href="/owner/Availability">Availability</a></li>
+                    <li><a href="/owner/bookings">Bookings</a></li>
+                    <li><a href="/owner/earnings">Earnings</a></li>
                 </ul>
             </nav>
 
@@ -319,39 +324,49 @@
                     </div>
 
                     <div class="availability-table">
-                        <div class="table-row table-header">
-                            <span>Space / Time</span>
-                            <span>08:00</span>
-                            <span>10:00</span>
-                            <span>12:00</span>
-                            <span>14:00</span>
-                            <span>16:00</span>
-                            <span>18:00</span>
-                            <span>20:00</span>
-                        </div>
 
-                        <div class="table-row">
-                            <span>P1-A001</span>
-                            <div class="slot active"></div>
-                            <div class="slot booked"></div>
-                            <div class="slot booked"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot blocked"></div>
-                            <div class="slot blocked"></div>
-                        </div>
+    <!-- Table Header -->
+    <div class="table-row table-header">
+        <span>Space / Time</span>
+        <span>08:00</span>
+        <span>10:00</span>
+        <span>12:00</span>
+        <span>14:00</span>
+        <span>16:00</span>
+        <span>18:00</span>
+        <span>20:00</span>
+    </div>
 
-                        <div class="table-row">
-                            <span>P1-A002</span>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                            <div class="slot active"></div>
-                        </div>
-                    </div>
+    <?php if (!empty($spaces)): ?>
+
+        <?php foreach ($spaces as $space): ?>
+            
+            <div class="table-row">
+
+                <!-- Space Name -->
+                <span><?= htmlspecialchars($space['spot_name']) ?></span>
+
+                <!-- Space Slots -->
+                <?php foreach ($space['slots'] as $slot): ?>
+                    
+                    <div class="slot <?= htmlspecialchars($slot['status']) ?>"></div>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        <?php endforeach; ?>
+
+    <?php else: ?>
+
+        <!-- No Spaces Found -->
+        <div class="table-row">
+            <span>No Spaces Found</span>
+        </div>
+
+    <?php endif; ?>
+
+</div>
 
                     <button class="bulk-btn">Bulk Update Availability</button>
                 </div>
@@ -361,14 +376,14 @@
         <aside class="right-panel">
             <div class="stats-cards">
                 <div class="card available-card">
-                    <span>Available</span>
-                    <h3>142</h3>
-                </div>
+    <span>Available</span>
+    <h3><?= $availableSlots ?></h3>
+</div>
 
-                <div class="card booked-card">
-                    <span>Booked</span>
-                    <h3>58</h3>
-                </div>
+<div class="card booked-card">
+    <span>Booked</span>
+    <h3><?= $bookedSlots ?></h3>
+</div>
             </div>
 
             <div class="chart-card">
@@ -388,7 +403,7 @@
 
             <div class="active-space-card">
                 <h4>Current Active Space</h4>
-                <h2>P1-A001</h2>
+             <h2><?= htmlspecialchars($currentSpaceName) ?></h2>
                 <div class="space-image"></div>
             </div>
         </aside>
@@ -442,7 +457,7 @@
             data: {
                 labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
                 datasets: [{
-                    data: [65, 59, 80, 81, 56, 72, 90],
+                    data: <?= json_encode($chartData) ?>,
                     borderColor: "#8b7bff",
                     tension: 0.4
                 }]
