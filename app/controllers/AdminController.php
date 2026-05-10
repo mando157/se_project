@@ -2,6 +2,7 @@
 require_once "../app/helpers/Validator.php";
 require_once "../app/models/User.php";
 require_once "../app/helpers/Auth.php";
+require_once "../app/models/RealtimeBooking.php";
 
 class AdminController extends Controller
 {
@@ -35,6 +36,20 @@ class AdminController extends Controller
 
         $this->view("admin/admin-management", [
             'user' => $user
+        ]);
+    }
+
+    public function realtimeBookings()
+    {
+        $user = Auth::user();
+
+        $realtimeModel = new RealtimeBooking();
+
+        $bookings = $realtimeModel->getRealtimeBookings();
+
+        $this->view("admin/admin-earnings", [
+            'user' => $user,
+            'bookings' => $bookings
         ]);
     }
 }
