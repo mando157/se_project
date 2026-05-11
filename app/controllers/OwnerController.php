@@ -347,4 +347,84 @@ class OwnerController extends Controller
         header('Content-Type: application/json');
         echo json_encode(['success' => true]);
     }
+public function addSpace()
+{
+    ob_clean();
+    header('Content-Type: application/json');
+    
+
+    $location = $_POST['location'] ?? '';
+    $pricePerHour = $_POST['price_per_hour'] ?? 0;
+    $totalSlots = $_POST['total_slots'] ?? 1;
+    $ownerId = $this->getOwnerId();
+    
+
+    if (empty($location)) {
+        echo json_encode(['success' => false, 'message' => 'Location is required']);
+        return;
+    }
+    
+    if ($pricePerHour <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Valid price is required']);
+        return;
+    }
+    
+
+    $query = "INSERT INTO parking_spots (owner_id, spot_name, location, price_per_hour, total_slots, status) 
+              VALUES ('$ownerId', '$location', '$location', '$pricePerHour', '$totalSlots', 'active')";
+    
+    if ($this->conn->query($query)) {
+        $spotId = $this->conn->insert_id;
+        
+        
+        $bookingQuery = "INSERT INTO bookings (spot_id, user_id, date, start_time, end_time, total_cost, status) 
+                         VALUES ('$spotId', '$ownerId', CURDATE(), '10:00:00', '12:00:00', " . ($pricePerHour * 2) . ", 'active')";
+        $this->conn->query($bookingQuery);
+        
+        
+        $notifQuery = "INSERT INTO notifications (user_id, message, is_read) 
+                       VALUES ('$ownerId', 'New space \"$location\" added with test booking', 0)";
+        $this->conn->query($notifQuery);
+        
+        echo json_encode(['success' => true, 'message' => 'Space added with test booking!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $this->conn->error]);
+    }
+}
+public function addBooking()
+{
+    ob_clean();
+    header('Content-Type: application/json');
+    
+    $spot_id = $_POST['spot_id'] ?? 0;
+    $date = $_POST['date'] ?? date('Y-m-d');
+    $start_time = $_POST['start_time'] ?? '10:00:00';
+    $end_time = $_POST['end_time'] ?? '12:00:00';
+    $total_cost = $_POST['total_cost'] ?? 0;
+    $status = $_POST['status'] ?? 'active';
+    $ownerId = $this->getOwnerId();
+    
+    if ($spot_id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Select a parking space']);
+        return;
+    }
+    
+    if ($total_cost <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Valid cost is required']);
+        return;
+    }
+    
+    $query = "INSERT INTO bookings (spot_id, user_id, date, start_time, end_time, total_cost, status) 
+              VALUES ('$spot_id', '$ownerId', '$date', '$start_time', '$end_time', '$total_cost', '$status')";
+    
+    if ($this->conn->query($query)) {
+        $notifQuery = "INSERT INTO notifications (user_id, message, is_read) 
+                       VALUES ('$ownerId', 'New booking added for spot #$spot_id worth $$total_cost', 0)";
+        $this->conn->query($notifQuery);
+        
+        echo json_encode(['success' => true, 'message' => 'Booking added successfully!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $this->conn->error]);
+    }
+}
 }
