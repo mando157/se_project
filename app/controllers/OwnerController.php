@@ -34,9 +34,9 @@ class OwnerController extends Controller
         echo "<!-- Owner ID: " . $ownerId . " -->";
         
         $data = [
-            'totalEarnings' => $this->getTotalEarnings($ownerId),
-            'lastMonthEarnings' => $this->getLastMonthEarnings($ownerId),
-            'EarningsChange' => 0,
+            'totalearnings' => $this->getTotalearnings($ownerId),
+            'lastMonthearnings' => $this->getLastMonthearnings($ownerId),
+            'earningsChange' => 0,
             'activeBookings' => $this->getActiveBookingsCount($ownerId),
             'pendingBookings' => $this->getPendingBookingsCount($ownerId),
             'bookingsChange' => 0,
@@ -50,11 +50,11 @@ class OwnerController extends Controller
         ];
         
        
-        $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
-        $data['EarningsChange'] = $this->calculatePercentageChange($lastMonthEarnings, $data['TotalEarnings']);
+        $lastMonthearnings = $this->getLastMonthearnings($ownerId);
+        $data['earningsChange'] = $this->calculatePercentageChange($lastMonthearnings, $data['totalearnings']);
         
         $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
-        $data['BookingsChange'] = $this->calculatePercentageChange($prevActiveBookings, $data['ActiveBookings']);
+        $data['bookingsChange'] = $this->calculatePercentageChange($prevActiveBookings, $data['activeBookings']);
         
         $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
         $data['occupancyChange'] = $this->calculatePercentageChange($prevOccupancyRate, $data['occupancyRate']);
@@ -64,7 +64,7 @@ class OwnerController extends Controller
     
     
     
-    private function getTotalEarnings($ownerId)
+    private function getTotalearnings($ownerId)
     {
         $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
                   FROM bookings b
@@ -79,7 +79,7 @@ class OwnerController extends Controller
         return (float)($row['total'] ?? 0);
     }
     
-    private function getLastMonthEarnings($ownerId)
+    private function getLastMonthearnings($ownerId)
     {
         $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
                   FROM bookings b
@@ -319,12 +319,12 @@ class OwnerController extends Controller
         
         $data = [
             'success' => true,
-            'totalearnings' => $this->getTotalEarnings($ownerId),
+            'totalearnings' => $this->getTotalearnings($ownerId),
             'activeBookings' => $this->getActiveBookingsCount($ownerId),
             'pendingBookings' => $this->getPendingBookingsCount($ownerId),
             'occupancyRate' => $this->getOccupancyRate($ownerId),
             'peakHour' => $this->getPeakHour($ownerId),
-            'earningsChange' => $this->calculatePercentageChange($this->getLastMonthEarnings($ownerId), $this->getTotalEarnings($ownerId)),
+            'earningsChange' => $this->calculatePercentageChange($this->getLastMonthearnings($ownerId), $this->getTotalearnings($ownerId)),
             'bookingsChange' => $this->calculatePercentageChange($this->getPreviousActiveBookingsCount($ownerId), $this->getActiveBookingsCount($ownerId)),
             'occupancyChange' => $this->calculatePercentageChange($this->getPreviousOccupancyRate($ownerId), $this->getOccupancyRate($ownerId))
         ];
@@ -348,7 +348,7 @@ class OwnerController extends Controller
         echo json_encode(['success' => true]);
     }
     // ========================= EARNINGS PAGE =========================
-public function Earnings()
+public function earnings()
 {
     $ownerId = $this->getOwnerId();
 
@@ -359,7 +359,7 @@ public function Earnings()
     $notifications = $this->getNotifications($ownerId);
 
 
-    $this->view("Owner/Earnings", [
+    $this->view("Owner/earnings", [
         'totalRevenue'   => $totalRevenue,
         'activeSpaces'   => $activeSpaces,
         'pendingPayout'  => $pendingPayout,
