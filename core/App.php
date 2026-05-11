@@ -1,47 +1,41 @@
-
 <?php
 
 class App
 {
-    protected $controller = 'HomeController';
-    protected $method = 'index';
+    protected $controller = 'OwnerController';  
+    protected $method = 'dashboard';            
     protected $params = [];
 
     public function __construct()
     {
         $url = $this->parseUrl();
 
-        // ======================
-        // CONTROLLER
-        // ======================
+       
         if (!empty($url[0])) {
-
             $controllerName = ucfirst(strtolower($url[0])) . "Controller";
             $controllerPath = "../app/controllers/" . $controllerName . ".php";
 
             if (file_exists($controllerPath)) {
                 require_once $controllerPath;
                 $this->controller = $controllerName;
-            } else {
-                require_once "../app/controllers/HomeController.php";
-                $this->controller = "HomeController";
             }
-
             unset($url[0]);
-
         } else {
-            require_once "../app/controllers/HomeController.php";
-            $this->controller = "HomeController";
+          
+            $controllerPath = "../app/controllers/" . $this->controller . ".php";
+            if (file_exists($controllerPath)) {
+                require_once $controllerPath;
+            }
         }
 
-        // ======================
-        // CREATE OBJECT
-        // ======================
-        $this->controller = new $this->controller;
+    
+        if (class_exists($this->controller)) {
+            $this->controller = new $this->controller;
+        } else {
+            die("Controller not found: " . $this->controller);
+        }
 
-        // ======================
-        // METHOD
-        // ======================
+        // تحديد الميثود
         if (!empty($url[1])) {
             if (method_exists($this->controller, $url[1])) {
                 $this->method = $url[1];
@@ -49,27 +43,17 @@ class App
             }
         }
 
-        // ======================
-        // PARAMS
-        // ======================
+ 
         $this->params = $url ? array_values($url) : [];
 
-        // ======================
-        // CALL METHOD
-        // ======================
-        call_user_func_array(
-            [$this->controller, $this->method],
-            $this->params
-        );
+      
+        call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
     private function parseUrl()
     {
         if (isset($_GET['url'])) {
-            return explode(
-                '/',
-                filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL)
-            );
+            return explode('/', filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL));
         }
         return [];
     }

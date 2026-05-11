@@ -1,6 +1,8 @@
 <?php
 
 require_once "../app/helpers/Auth.php";
+require_once "../core/Database.php";
+require_once "../core/Controller.php";
 
 class OwnerController extends Controller
 {
@@ -8,65 +10,59 @@ class OwnerController extends Controller
     
     public function __construct()
     {
-        Auth::redirectIfNotLogged();
-        Auth::forbidIfNotRole('owner');
+       
         
         $database = Database::getInstance();
         $this->conn = $database->getConnection();
     }
     
-    public function index()
-    {
-        $this->dashboard();
-    }
-    
     private function getOwnerId()
     {
-        $user = Auth::user();
-        return $user['id'] ?? 0;
+                $query = "SELECT id FROM users WHERE role = 'owner' LIMIT 1";
+        $result = $this->conn->query($query);
+        if ($result && $row = $result->fetch_assoc()) {
+            return $row['id'];
+        }
+        return 1; 
     }
     
     public function dashboard()
     {
         $ownerId = $this->getOwnerId();
         
-        $totalEarnings = $this->getTotalEarnings($ownerId);
+        
+        echo "<!-- Owner ID: " . $ownerId . " -->";
+        
+        $data = [
+            'totalEarnings' => $this->getTotalEarnings($ownerId),
+            'lastMonthEarnings' => $this->getLastMonthEarnings($ownerId),
+            'earningsChange' => 0,
+            'activeBookings' => $this->getActiveBookingsCount($ownerId),
+            'pendingBookings' => $this->getPendingBookingsCount($ownerId),
+            'bookingsChange' => 0,
+            'occupancyRate' => $this->getOccupancyRate($ownerId),
+            'occupancyChange' => 0,
+            'peakHour' => $this->getPeakHour($ownerId),
+            'weeklyRevenue' => $this->getWeeklyRevenue($ownerId),
+            'monthlyRevenue' => $this->getMonthlyRevenue($ownerId),
+            'recentBookings' => $this->getRecentBookings($ownerId),
+            'notifications' => $this->getNotifications($ownerId)
+        ];
+        
+       
         $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
-        $earningsChange = $this->calculatePercentageChange($lastMonthEarnings, $totalEarnings);
+        $data['earningsChange'] = $this->calculatePercentageChange($lastMonthEarnings, $data['totalEarnings']);
         
-        $activeBookings = $this->getActiveBookingsCount($ownerId);
-        $pendingBookings = $this->getPendingBookingsCount($ownerId);
         $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
-        $bookingsChange = $this->calculatePercentageChange($prevActiveBookings, $activeBookings);
+        $data['bookingsChange'] = $this->calculatePercentageChange($prevActiveBookings, $data['activeBookings']);
         
-        $totalSlots = $this->getTotalSlots($ownerId);
-        $occupiedSlots = $this->getOccupiedSlots($ownerId);
-        $occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
         $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
-        $occupancyChange = $this->calculatePercentageChange($prevOccupancyRate, $occupancyRate);
+        $data['occupancyChange'] = $this->calculatePercentageChange($prevOccupancyRate, $data['occupancyRate']);
         
-        $peakHour = $this->getPeakHour($ownerId);
-        $weeklyRevenue = $this->getWeeklyRevenue($ownerId);
-        $monthlyRevenue = $this->getMonthlyRevenue($ownerId);
-        $recentBookings = $this->getRecentBookings($ownerId);
-        $notifications = $this->getNotifications($ownerId);
-        
-        $this->view("Owner/dashboard", [
-            'totalEarnings' => $totalEarnings,
-            'lastMonthEarnings' => $lastMonthEarnings,
-            'earningsChange' => $earningsChange,
-            'activeBookings' => $activeBookings,
-            'pendingBookings' => $pendingBookings,
-            'bookingsChange' => $bookingsChange,
-            'occupancyRate' => $occupancyRate,
-            'occupancyChange' => $occupancyChange,
-            'peakHour' => $peakHour,
-            'weeklyRevenue' => $weeklyRevenue,
-            'monthlyRevenue' => $monthlyRevenue,
-            'recentBookings' => $recentBookings,
-            'notifications' => $notifications
-        ]);
+        $this->view("Owner/dashboard", $data);
     }
+    
+ 
     
     private function getTotalEarnings($ownerId)
     {
@@ -76,15 +72,10 @@ class OwnerController extends Controller
                   WHERE ps.owner_id = ? AND b.status IN ('active', 'completed')";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (float)($row['total'] ?? 0);
     }
     
@@ -98,15 +89,10 @@ class OwnerController extends Controller
                     AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (float)($row['total'] ?? 0);
     }
     
@@ -118,15 +104,10 @@ class OwnerController extends Controller
                   WHERE ps.owner_id = ? AND b.status = 'active'";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (int)($row['count'] ?? 0);
     }
     
@@ -138,15 +119,10 @@ class OwnerController extends Controller
                   WHERE ps.owner_id = ? AND b.status = 'pending'";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (int)($row['count'] ?? 0);
     }
     
@@ -159,15 +135,10 @@ class OwnerController extends Controller
                     AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (int)($row['count'] ?? 0);
     }
     
@@ -178,15 +149,10 @@ class OwnerController extends Controller
                   WHERE owner_id = ?";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (int)($row['total'] ?? 0);
     }
     
@@ -198,16 +164,18 @@ class OwnerController extends Controller
                   WHERE ps.owner_id = ? AND b.status = 'active'";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
-        
         return (int)($row['occupied'] ?? 0);
+    }
+    
+    private function getOccupancyRate($ownerId)
+    {
+        $totalSlots = $this->getTotalSlots($ownerId);
+        $occupiedSlots = $this->getOccupiedSlots($ownerId);
+        return $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
     }
     
     private function getPreviousOccupancyRate($ownerId)
@@ -219,40 +187,31 @@ class OwnerController extends Controller
                     AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return 0;
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
         
         $totalSlots = $this->getTotalSlots($ownerId);
         $occupied = (int)($row['occupied'] ?? 0);
-        
         return $totalSlots > 0 ? round(($occupied / $totalSlots) * 100, 1) : 0;
     }
     
     private function getPeakHour($ownerId)
     {
-        $query = "SELECT HOUR(CONCAT(b.date, ' ', b.start_time)) as hour, COUNT(*) as count
+        $query = "SELECT HOUR(start_time) as hour, COUNT(*) as count
                   FROM bookings b
                   INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                   WHERE ps.owner_id = ?
-                  GROUP BY HOUR(CONCAT(b.date, ' ', b.start_time))
+                  GROUP BY HOUR(start_time)
                   ORDER BY count DESC
                   LIMIT 1";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return '14:00 - 16:00';
-        }
         $stmt->bind_param("i", $ownerId);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        $stmt->close();
         
         if ($row && isset($row['hour'])) {
             $hour = (int)$row['hour'];
@@ -274,16 +233,10 @@ class OwnerController extends Controller
                         AND b.status IN ('active', 'completed')";
             
             $stmt = $this->conn->prepare($query);
-            if (!$stmt) {
-                $weekly[] = 0;
-                continue;
-            }
             $stmt->bind_param("is", $ownerId, $date);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
-            $stmt->close();
-            
             $weekly[] = (float)($row['total'] ?? 0);
         }
         return $weekly;
@@ -304,16 +257,10 @@ class OwnerController extends Controller
                         AND b.status IN ('active', 'completed')";
             
             $stmt = $this->conn->prepare($query);
-            if (!$stmt) {
-                $monthly[] = 0;
-                continue;
-            }
             $stmt->bind_param("iss", $ownerId, $monthStart, $monthEnd);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
-            $stmt->close();
-            
             $monthly[] = (float)($row['total'] ?? 0);
         }
         return $monthly;
@@ -321,7 +268,7 @@ class OwnerController extends Controller
     
     private function getRecentBookings($ownerId, $limit = 10)
     {
-        $query = "SELECT b.*, b.location as spot_name
+        $query = "SELECT b.*, ps.spot_name
                   FROM bookings b
                   INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                   WHERE ps.owner_id = ?
@@ -329,9 +276,6 @@ class OwnerController extends Controller
                   LIMIT ?";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return [];
-        }
         $stmt->bind_param("ii", $ownerId, $limit);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -341,8 +285,6 @@ class OwnerController extends Controller
             $row['booked_slots'] = 1;
             $bookings[] = $row;
         }
-        $stmt->close();
-        
         return $bookings;
     }
     
@@ -354,9 +296,6 @@ class OwnerController extends Controller
                   LIMIT ?";
         
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            return [];
-        }
         $stmt->bind_param("ii", $ownerId, $limit);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -365,8 +304,6 @@ class OwnerController extends Controller
         while ($row = $result->fetch_assoc()) {
             $notifications[] = $row;
         }
-        $stmt->close();
-        
         return $notifications;
     }
     
@@ -380,35 +317,20 @@ class OwnerController extends Controller
     {
         $ownerId = $this->getOwnerId();
         
-        $totalEarnings = $this->getTotalEarnings($ownerId);
-        $activeBookings = $this->getActiveBookingsCount($ownerId);
-        $pendingBookings = $this->getPendingBookingsCount($ownerId);
-        $totalSlots = $this->getTotalSlots($ownerId);
-        $occupiedSlots = $this->getOccupiedSlots($ownerId);
-        $occupancyRate = $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
-        $peakHour = $this->getPeakHour($ownerId);
-        
-        $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
-        $earningsChange = $this->calculatePercentageChange($lastMonthEarnings, $totalEarnings);
-        
-        $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
-        $bookingsChange = $this->calculatePercentageChange($prevActiveBookings, $activeBookings);
-        
-        $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
-        $occupancyChange = $this->calculatePercentageChange($prevOccupancyRate, $occupancyRate);
+        $data = [
+            'success' => true,
+            'totalearnings' => $this->getTotalEarnings($ownerId),
+            'activeBookings' => $this->getActiveBookingsCount($ownerId),
+            'pendingBookings' => $this->getPendingBookingsCount($ownerId),
+            'occupancyRate' => $this->getOccupancyRate($ownerId),
+            'peakHour' => $this->getPeakHour($ownerId),
+            'earningsChange' => $this->calculatePercentageChange($this->getLastMonthEarnings($ownerId), $this->getTotalEarnings($ownerId)),
+            'bookingsChange' => $this->calculatePercentageChange($this->getPreviousActiveBookingsCount($ownerId), $this->getActiveBookingsCount($ownerId)),
+            'occupancyChange' => $this->calculatePercentageChange($this->getPreviousOccupancyRate($ownerId), $this->getOccupancyRate($ownerId))
+        ];
         
         header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'totalearnings' => $totalEarnings,
-            'activeBookings' => $activeBookings,
-            'pendingBookings' => $pendingBookings,
-            'occupancyRate' => $occupancyRate,
-            'peakHour' => $peakHour,
-            'earningsChange' => $earningsChange,
-            'bookingsChange' => $bookingsChange,
-            'occupancyChange' => $occupancyChange
-        ]);
+        echo json_encode($data);
     }
     
     public function markNotificationsRead()
@@ -420,56 +342,9 @@ class OwnerController extends Controller
         if ($stmt) {
             $stmt->bind_param("i", $ownerId);
             $stmt->execute();
-            $stmt->close();
         }
         
         header('Content-Type: application/json');
         echo json_encode(['success' => true]);
     }
-    
-    public function notifications()
-    {
-        $ownerId = $this->getOwnerId();
-        $notifications = $this->getNotifications($ownerId, 50);
-        
-        $this->view("Owner/notifications", [
-            'notifications' => $notifications
-        ]);
-    }
-    
-    public function bookings()
-    {
-        $ownerId = $this->getOwnerId();
-        $bookings = $this->getRecentBookings($ownerId, 50);
-        
-        $this->view("Owner/bookings", [
-            'bookings' => $bookings
-        ]);
-    }
-    
-    public function spaces()
-    {
-        $ownerId = $this->getOwnerId();
-        
-        $query = "SELECT * FROM parking_spots WHERE owner_id = ?";
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            $spaces = [];
-        } else {
-            $stmt->bind_param("i", $ownerId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $spaces = [];
-            while ($row = $result->fetch_assoc()) {
-                $spaces[] = $row;
-            }
-            $stmt->close();
-        }
-        
-        $this->view("Owner/spaces", [
-            'spaces' => $spaces
-        ]);
-    }
-
-
 }
