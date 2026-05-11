@@ -62,15 +62,6 @@
         <th>Rent</th>
     </tr>
 
-    <?php foreach($bookings as $booking): ?>
-
-    <tr>
-        <td><?= $booking['system_identity'] ?></td>
-        <td><?= $booking['location'] ?></td>
-        <td><?= $booking['rent'] ?></td>
-    </tr>
-
-    <?php endforeach; ?>
 </table>
 
 
