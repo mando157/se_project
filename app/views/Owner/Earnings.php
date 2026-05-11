@@ -331,8 +331,8 @@
 <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
 <a href="<?= BASE_URL ?>/owner/availability" class="nav-item">Availability</a>
 <a href="<?= BASE_URL ?>/owner/bookings" class="nav-item">Bookings</a>
-<a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">Earnings</a>
-<a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">index</a>
+<a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">earnings</a>
+<a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">index</a>
 </nav>
 
     </aside>
@@ -340,7 +340,7 @@
     <main class="main">
         <header class="page-header">
             <div>
-                <h1>Earnings Overview</h1>
+                <h1>earnings Overview</h1>
                 <p>Monitor your revenue flow across urban zones.</p>
             </div>
 
