@@ -11,7 +11,7 @@ class Controller
         if (file_exists($path)) {
             require_once $path;
         } else {
-            die("View not found: " . $view);
+            die("View not found: " . $view . " - المسار: " . $path);
         }
     }
 }
