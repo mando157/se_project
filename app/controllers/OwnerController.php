@@ -27,59 +27,24 @@ class OwnerController extends Controller
     }
     
     public function dashboard()
-    {
-        $ownerId = $this->getOwnerId();
-        
-        
-        echo "<!-- Owner ID: " . $ownerId . " -->";
-        
-        $data = [
-            'totalearnings' => $this->getTotalearnings($ownerId),
-            'lastMonthearnings' => $this->getLastMonthearnings($ownerId),
-            'earningsChange' => 0,
-            'activeBookings' => $this->getActiveBookingsCount($ownerId),
-            'pendingBookings' => $this->getPendingBookingsCount($ownerId),
-            'bookingsChange' => 0,
-            'occupancyRate' => $this->getOccupancyRate($ownerId),
-            'occupancyChange' => 0,
-            'peakHour' => $this->getPeakHour($ownerId),
-            'weeklyRevenue' => $this->getWeeklyRevenue($ownerId),
-            'monthlyRevenue' => $this->getMonthlyRevenue($ownerId),
-            'recentBookings' => $this->getRecentBookings($ownerId),
-            'notifications' => $this->getNotifications($ownerId)
-        ];
-        
-       
-        $lastMonthearnings = $this->getLastMonthearnings($ownerId);
-        $data['earningsChange'] = $this->calculatePercentageChange($lastMonthearnings, $data['totalearnings']);
-        
-        $prevActiveBookings = $this->getPreviousActiveBookingsCount($ownerId);
-        $data['bookingsChange'] = $this->calculatePercentageChange($prevActiveBookings, $data['activeBookings']);
-        
-        $prevOccupancyRate = $this->getPreviousOccupancyRate($ownerId);
-        $data['occupancyChange'] = $this->calculatePercentageChange($prevOccupancyRate, $data['occupancyRate']);
-        
-        $this->view("Owner/dashboard", $data);
-    }
+{
+    $ownerId = $this->getOwnerId();
+
+    echo "<!-- Owner ID: " . $ownerId . " -->";
+
+    $data = $this->buildDashboardData($ownerId);
+
+    $this->view("Owner/dashboard", $data);
+}
     
     
     
-    private function getTotalearnings($ownerId)
-    {
-        $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
-                  FROM bookings b
-                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-                  WHERE ps.owner_id = ? AND b.status IN ('active', 'completed')";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $ownerId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return (float)($row['total'] ?? 0);
-    }
+    private function getTotalEarnings($ownerId)
+{
+    return $this->getRevenue($ownerId);
+}
     
-    private function getLastMonthearnings($ownerId)
+    private function getLastMonthEarnings($ownerId)
     {
         $query = "SELECT COALESCE(SUM(b.total_cost), 0) as total 
                   FROM bookings b
@@ -95,37 +60,61 @@ class OwnerController extends Controller
         $row = $result->fetch_assoc();
         return (float)($row['total'] ?? 0);
     }
-    
+    private function getRevenue($ownerId, $statuses = ['active', 'completed'])
+{
+    $placeholders = implode(',', array_fill(0, count($statuses), '?'));
+
+    $query = "SELECT COALESCE(SUM(b.total_cost), 0) AS total
+              FROM bookings b
+              INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+              WHERE ps.owner_id = ?
+              AND b.status IN ($placeholders)";
+
+    $stmt = $this->conn->prepare($query);
+
+    $types = "i" . str_repeat("s", count($statuses));
+
+    $params = array_merge([$ownerId], $statuses);
+
+    $stmt->bind_param($types, ...$params);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $row = $result->fetch_assoc();
+
+    return (float)($row['total'] ?? 0);
+}
     private function getActiveBookingsCount($ownerId)
     {
-        $query = "SELECT COUNT(*) as count 
-                  FROM bookings b
-                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-                  WHERE ps.owner_id = ? AND b.status = 'active'";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $ownerId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return (int)($row['count'] ?? 0);
+            return $this->getBookingsCountByStatus($ownerId, 'active');
     }
     
-    private function getPendingBookingsCount($ownerId)
-    {
-        $query = "SELECT COUNT(*) as count 
-                  FROM bookings b
-                  INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-                  WHERE ps.owner_id = ? AND b.status = 'pending'";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $ownerId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        return (int)($row['count'] ?? 0);
-    }
+   private function getPendingBookingsCount($ownerId)
+{
+    return $this->getBookingsCountByStatus($ownerId, 'pending');
+}
     
+    private function getBookingsCountByStatus($ownerId, $status)
+{
+    $query = "SELECT COUNT(*) as count
+              FROM bookings b
+              INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
+              WHERE ps.owner_id = ? AND b.status = ?";
+
+    $stmt = $this->conn->prepare($query);
+
+    $stmt->bind_param("is", $ownerId, $status);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $row = $result->fetch_assoc();
+
+    return (int)($row['count'] ?? 0);
+}
     private function getPreviousActiveBookingsCount($ownerId)
     {
         $query = "SELECT COUNT(*) as count 
@@ -312,26 +301,51 @@ class OwnerController extends Controller
         if ($oldValue == 0) return $newValue > 0 ? 100 : 0;
         return round((($newValue - $oldValue) / $oldValue) * 100, 1);
     }
-    
+    private function buildDashboardData($ownerId)
+{
+    $data = [
+        'totalEarnings' => $this->getTotalEarnings($ownerId),
+        'lastMonthEarnings' => $this->getLastMonthEarnings($ownerId),
+        'activeBookings' => $this->getActiveBookingsCount($ownerId),
+        'pendingBookings' => $this->getPendingBookingsCount($ownerId),
+        'occupancyRate' => $this->getOccupancyRate($ownerId),
+        'peakHour' => $this->getPeakHour($ownerId),
+        'weeklyRevenue' => $this->getWeeklyRevenue($ownerId),
+        'monthlyRevenue' => $this->getMonthlyRevenue($ownerId),
+        'recentBookings' => $this->getRecentBookings($ownerId),
+        'notifications' => $this->getNotifications($ownerId)
+    ];
+
+    $data['earningsChange'] =
+        $this->calculatePercentageChange(
+            $data['lastMonthEarnings'],
+            $data['totalEarnings']
+        );
+
+    $data['bookingsChange'] =
+        $this->calculatePercentageChange(
+            $this->getPreviousActiveBookingsCount($ownerId),
+            $data['activeBookings']
+        );
+
+    $data['occupancyChange'] =
+        $this->calculatePercentageChange(
+            $this->getPreviousOccupancyRate($ownerId),
+            $data['occupancyRate']
+        );
+
+    return $data;
+}
     public function getDashboardData()
-    {
-        $ownerId = $this->getOwnerId();
-        
-        $data = [
-            'success' => true,
-            'totalearnings' => $this->getTotalearnings($ownerId),
-            'activeBookings' => $this->getActiveBookingsCount($ownerId),
-            'pendingBookings' => $this->getPendingBookingsCount($ownerId),
-            'occupancyRate' => $this->getOccupancyRate($ownerId),
-            'peakHour' => $this->getPeakHour($ownerId),
-            'earningsChange' => $this->calculatePercentageChange($this->getLastMonthearnings($ownerId), $this->getTotalearnings($ownerId)),
-            'bookingsChange' => $this->calculatePercentageChange($this->getPreviousActiveBookingsCount($ownerId), $this->getActiveBookingsCount($ownerId)),
-            'occupancyChange' => $this->calculatePercentageChange($this->getPreviousOccupancyRate($ownerId), $this->getOccupancyRate($ownerId))
-        ];
-        
-        header('Content-Type: application/json');
-        echo json_encode($data);
-    }
+{
+    $ownerId = $this->getOwnerId();
+
+    $data = $this->buildDashboardData($ownerId);
+
+    $data['success'] = true;
+
+    $this->jsonResponse($data);
+}
     
     public function markNotificationsRead()
     {
@@ -344,8 +358,7 @@ class OwnerController extends Controller
             $stmt->execute();
         }
         
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true]);
+       $this->jsonResponse(['success' => true]);
     }
     // ========================= EARNINGS PAGE =========================
 public function earnings()
@@ -372,29 +385,8 @@ public function earnings()
 // ========================= TOTAL REVENUE =========================
 private function getTotalRevenue($ownerId)
 {
-    $query = "SELECT COALESCE(SUM(b.total_cost), 0) AS total
-              FROM bookings b
-              INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-              WHERE ps.owner_id = ?
-              AND b.status IN ('active', 'completed')";
-
-    $stmt = $this->conn->prepare($query);
-
-    if (!$stmt) {
-        return 0;
-    }
-
-    $stmt->bind_param("i", $ownerId);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-
-    $stmt->close();
-
-    return (float)($row['total'] ?? 0);
+    return $this->getRevenue($ownerId);
 }
-
 
 // ========================= ACTIVE SPACES =========================
 private function getActiveSpacesCount($ownerId)
@@ -609,5 +601,15 @@ private function getAvailabilityChartData($ownerId)
     }
 
     return $chartData;
+}
+private function jsonResponse($data)
+{
+    ob_clean();
+
+    header('Content-Type: application/json');
+
+    echo json_encode($data);
+
+    exit;
 }
 }
