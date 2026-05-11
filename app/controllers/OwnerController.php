@@ -62,7 +62,7 @@ class OwnerController extends Controller
         $this->view("Owner/dashboard", $data);
     }
     
- 
+    
     
     private function getTotalEarnings($ownerId)
     {

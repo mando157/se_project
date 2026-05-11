@@ -74,18 +74,16 @@ CREATE TABLE notifications (
 
     title VARCHAR(255),
     message TEXT,
-    type VARCHAR(20),
-    time VARCHAR(20),
 
     is_read BOOLEAN DEFAULT 0,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (user_id) 
-    REFERENCES users(id) 
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
     ON DELETE CASCADE,
 
-    FOREIGN KEY (booking_id) 
+    FOREIGN KEY (booking_id)
     REFERENCES bookings(booking_id)
     ON DELETE CASCADE
 );
@@ -109,14 +107,16 @@ CREATE TABLE fines (
 );
 
 -- REAL-TIME BOOKING
-CREATE TABLE realtime_booking(
-    system_identity VARCHAR(100),
+CREATE TABLE realtime_booking (
+    realtime_id INT AUTO_INCREMENT PRIMARY KEY,
 
-    location VARCHAR(100) NOT NULL,
+    user_id INT NOT NULL,
+    booking_id INT NOT NULL,
+    spot_id INT NOT NULL,
 
-    rent DECIMAL(10,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (system_identity) REFERENCES users(fullName) ON DELETE CASCADE,
-    FOREIGN KEY (rent) REFERENCES bookings(total_cost) ON DELETE CASCADE,
-    FOREIGN KEY (location) REFERENCES parking_spots(location) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id) ON DELETE CASCADE,
+    FOREIGN KEY (spot_id) REFERENCES parking_spots(spot_id) ON DELETE CASCADE
 );
