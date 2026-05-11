@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -187,7 +186,7 @@
 
         .table-row {
             display: grid;
-             grid-template-columns: 120px repeat(auto-fit, minmax(45px, 1fr));
+            grid-template-columns: 120px repeat(7, 1fr);
             gap: 10px;
             align-items: center;
             margin-bottom: 12px;
@@ -261,219 +260,202 @@
                 flex-direction: column;
                 align-items: stretch;
             }
-            .sidebar-nav li a {
-                 text-decoration: none;
-                  color: inherit;
-                 display: block;
-}
         }
     </style>
 </head>
-
 <body>
 
-    <div class="dashboard">
-        <aside class="sidebar">
-            <div class="logo-section">
-                <h2>UrbanKinetic</h2>
-                <p>Space Owner</p>
-            </div>
-
-            <nav class="sidebar-nav">
-                <ul>
-                    <<li><a href="/owner/dashboard">Dashboard</a></li>
-                    <li><a href="/owner/myspaces">My Spaces</a></li>
-                    <li class="active"><a href="/owner/Availability">Availability</a></li>
-                    <li><a href="/owner/bookings">Bookings</a></li>
-                    <li><a href="/owner/earnings">Earnings</a></li>
-                </ul>
-            </nav>
-
-            <button class="add-space-btn">Add New Space</button>
-        </aside>
-
-        <main class="main-content">
-            <header class="topbar">
-                <input type="text" placeholder="Search commands or slots...">
-
-                <div class="top-links">
-                    <a href="#">Analytics</a>
-                    <a href="#">Reports</a>
-                    <a href="#">Live Map</a>
-                </div>
-
-                <button class="release-btn">Release All Slots</button>
-            </header>
-
-            <section class="availability-section">
-                <div class="section-header">
-                    <h1>Availability Grid</h1>
-                    <p>Manage your commercial parking assets in real-time.</p>
-                </div>
-
-                <div class="grid-container">
-                    <div class="grid-topbar">
-                        <button>&lt;</button>
-                        <span>Oct 24 - Oct 30, 2023</span>
-                        <button>&gt;</button>
-                    </div>
-
-                    <div class="view-modes">
-                        <button class="active-mode">Weekly</button>
-                        <button>Monthly</button>
-                    </div>
-
-                    <div class="availability-table">
-
-    <!-- Table Header -->
-    <div class="table-row table-header">
-        <span>Space / Time</span>
-        <span>08:00</span>
-        <span>10:00</span>
-        <span>12:00</span>
-        <span>14:00</span>
-        <span>16:00</span>
-        <span>18:00</span>
-        <span>20:00</span>
-    </div>
-
-    <?php if (!empty($spaces)): ?>
-
-        <?php foreach ($spaces as $space): ?>
-            
-            <div class="table-row">
-
-                <!-- Space Name -->
-                <span><?= htmlspecialchars($space['spot_name']) ?></span>
-
-                <!-- Space Slots -->
-                <?php foreach ($space['slots'] as $slot): ?>
-                    
-                    <div class="slot <?= htmlspecialchars($slot['status']) ?>"></div>
-
-                <?php endforeach; ?>
-
-            </div>
-
-        <?php endforeach; ?>
-
-    <?php else: ?>
-
-        <!-- No Spaces Found -->
-        <div class="table-row">
-            <span>No Spaces Found</span>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="logo-section">
+            <h2>UrbanKinetic</h2>
+            <p>Space Owner</p>
         </div>
 
-    <?php endif; ?>
+        <nav class="sidebar-nav">
+            <ul>
+            <a href="<?= BASE_URL ?>/owner/dashboard" class="nav-item">Dashboard</a>
+                <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
+                <a href="<?= BASE_URL ?>/owner/availability" class="nav-item <?= basename($_SERVER['REQUEST_URI']) == 'availability' ? 'active' : '' ?>">Availability</a>
+                <a href="<?= BASE_URL ?>/owner/bookings" class="nav-item">Bookings</a>
+                <a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">Earnings</a>
+            </ul>
+        </nav>
 
-</div>
+        <button class="add-space-btn">Add New Space</button>
+    </aside>
 
-                    <button class="bulk-btn">Bulk Update Availability</button>
+    <main class="main-content">
+        <header class="topbar">
+            <input type="text" placeholder="Search commands or slots...">
+
+            <div class="top-links">
+                <a href="#">Analytics</a>
+                <a href="#">Reports</a>
+                <a href="#">Live Map</a>
+            </div>
+
+            <button class="release-btn">Release All Slots</button>
+        </header>
+
+        <section class="availability-section">
+            <div class="section-header">
+                <h1>Availability Grid</h1>
+                <p>Manage your commercial parking assets in real-time.</p>
+            </div>
+
+            <div class="grid-container">
+                <div class="grid-topbar">
+                    <button>&lt;</button>
+                    <span>Oct 24 - Oct 30, 2023</span>
+                    <button>&gt;</button>
                 </div>
-            </section>
-        </main>
 
-        <aside class="right-panel">
-            <div class="stats-cards">
-                <div class="card available-card">
-    <span>Available</span>
-    <h3><?= $availableSlots ?></h3>
-</div>
-
-<div class="card booked-card">
-    <span>Booked</span>
-    <h3><?= $bookedSlots ?></h3>
-</div>
-            </div>
-
-            <div class="chart-card">
-                <h3>Occupancy Analytics</h3>
-                <canvas id="occupancyChart"></canvas>
-            </div>
-
-            <div class="quick-actions">
-                <h3>Quick Batch Actions</h3>
-                <p>Apply changes instantly.</p>
-
-                <div class="toggle-item">
-                    <span>Weekend Surge Mode</span>
-                    <input type="checkbox">
+                <div class="view-modes">
+                    <button class="active-mode">Weekly</button>
+                    <button>Monthly</button>
                 </div>
-            </div>
 
-            <div class="active-space-card">
-                <h4>Current Active Space</h4>
-             <h2><?= htmlspecialchars($currentSpaceName) ?></h2>
-                <div class="space-image"></div>
+                <div class="availability-table">
+                    <div class="table-row table-header">
+                        <span>Space / Time</span>
+                        <span>08:00</span>
+                        <span>10:00</span>
+                        <span>12:00</span>
+                        <span>14:00</span>
+                        <span>16:00</span>
+                        <span>18:00</span>
+                        <span>20:00</span>
+                    </div>
+
+                    <?php foreach ($spaces as $space): ?>
+    <div class="table-row">
+
+        <!-- Space Name -->
+        <span><?= htmlspecialchars($space['spot_name']) ?></span>
+
+        <!-- Real Slots -->
+        <?php
+        $slotCount = count($space['slots']);
+
+        foreach ($space['slots'] as $slot): ?>
+         <div class="slot <?= $slot['status'] ?>" data-slot-id="<?= $slot['slot_id'] ?>"></div>
+        <?php endforeach; ?>
+
+        <!-- Empty Slots -->
+        <?php for ($i = $slotCount; $i < 7; $i++): ?>
+            <div class="slot blocked"></div>
+        <?php endfor; ?>
+
+    </div>
+<?php endforeach; ?>
+                </div>
+
+                <button class="bulk-btn">Bulk Update Availability</button>
             </div>
-        </aside>
+        </section>
+    </main>
+
+    <aside class="right-panel">
+        <div class="stats-cards">
+            <div class="card available-card">
+                <span>Available</span>
+<h3><?= $availableSlots ?></h3>        
     </div>
 
-    <script>
-        const slots = document.querySelectorAll(".slot");
-        const availableCount = document.querySelector(".available-card h3");
-        const bookedCount = document.querySelector(".booked-card h3");
-        const bulkButton = document.querySelector(".bulk-btn");
-        const releaseButton = document.querySelector(".release-btn");
-        const activeSpaceTitle = document.querySelector(".active-space-card h2");
+            <div class="card booked-card">
+                <span>Booked</span>
+                <h3><?= $bookedSlots ?></h3>
+            </div>
+        </div>
 
-        function updateCounts() {
-            availableCount.textContent = document.querySelectorAll(".slot.active").length;
-            bookedCount.textContent = document.querySelectorAll(".slot.booked").length;
+        <div class="chart-card">
+            <h3>Occupancy Analytics</h3>
+            <canvas id="occupancyChart"></canvas>
+        </div>
+
+        <div class="quick-actions">
+            <h3>Quick Batch Actions</h3>
+            <p>Apply changes instantly.</p>
+
+            <div class="toggle-item">
+                <span>Weekend Surge Mode</span>
+                <input type="checkbox">
+            </div>
+        </div>
+
+        <div class="active-space-card">
+            <h4>Current Active Space</h4>
+            <h2><?= htmlspecialchars($currentSpaceName) ?></h2>
+            <div class="space-image"></div>
+        </div>
+    </aside>
+</div>
+
+<script>
+const slots = document.querySelectorAll(".slot");
+const availableCount = document.querySelector(".available-card h3");
+const bookedCount = document.querySelector(".booked-card h3");
+const bulkButton = document.querySelector(".bulk-btn");
+const releaseButton = document.querySelector(".release-btn");
+const activeSpaceTitle = document.querySelector(".active-space-card h2");
+
+function updateCounts() {
+    availableCount.textContent = document.querySelectorAll(".slot.active").length;
+    bookedCount.textContent = document.querySelectorAll(".slot.booked").length;
+}
+
+slots.forEach((slot) => {
+    slot.addEventListener("click", () => {
+        if (slot.classList.contains("active")) {
+            slot.classList.replace("active", "booked");
+        } else if (slot.classList.contains("booked")) {
+            slot.classList.replace("booked", "blocked");
+        } else {
+            slot.classList.replace("blocked", "active");
         }
 
-        slots.forEach((slot) => {
-            slot.addEventListener("click", () => {
-                if (slot.classList.contains("active")) {
-                    slot.classList.replace("active", "booked");
-                } else if (slot.classList.contains("booked")) {
-                    slot.classList.replace("booked", "blocked");
-                } else {
-                    slot.classList.replace("blocked", "active");
-                }
-
-                const row = slot.parentElement;
-                activeSpaceTitle.textContent = row.querySelector("span").textContent;
-
-                updateCounts();
-            });
-        });
-
-        bulkButton.addEventListener("click", () => {
-            slots.forEach((slot) => {
-                slot.classList.remove("booked", "blocked");
-                slot.classList.add("active");
-            });
-
-            updateCounts();
-        });
-
-        releaseButton.addEventListener("click", () => {
-            alert("All parking slots released successfully!");
-        });
-
-        new Chart(document.getElementById("occupancyChart"), {
-            type: "line",
-            data: {
-                labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                datasets: [{
-                    data: <?= json_encode($chartData) ?>,
-                    borderColor: "#8b7bff",
-                    tension: 0.4
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
+        const row = slot.parentElement;
+        activeSpaceTitle.textContent = row.querySelector("span").textContent;
 
         updateCounts();
-    </script>
+    });
+});
+
+bulkButton.addEventListener("click", () => {
+    slots.forEach((slot) => {
+        slot.classList.remove("booked", "blocked");
+        slot.classList.add("active");
+    });
+
+    updateCounts();
+});
+
+releaseButton.addEventListener("click", () => {
+    alert("All parking slots released successfully!");
+});
+
+new Chart(document.getElementById("occupancyChart"), {
+    type: "line",
+    data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [{
+            data: <?= json_encode($chartData) ?>,
+            borderColor: "#8b7bff",
+            tension: 0.4
+        }]
+    },
+    options: {
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+
+updateCounts();
+</script>
 
 </body>
-
 </html>

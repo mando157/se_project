@@ -322,17 +322,19 @@
 
     <aside class="sidebar">
         <header>
-            <a href="home.html" class="sidebar__logo">Urban <span>Kinetic</span></a>
+            <a href="<?= BASE_URL ?>/owner/dashboard" class="sidebar__logo">Urban <span>Kinetic</span></a>
             <p class="sidebar__role">Space Owner</p>
         </header>
 
         <nav class="sidebar__nav">
-            <a href="dashboard.html" class="nav-item">Dashboard</a>
-            <a href="spaces.html" class="nav-item">My Spaces</a>
-            <a href="availability.html" class="nav-item">Availability</a>
-            <a href="bookings.html" class="nav-item">Bookings</a>
-            <a href="earnings.html" class="nav-item">Earnings</a>
-        </nav>
+            <a href="<?= BASE_URL ?>/owner/dashboard" class="nav-item">Dashboard</a>
+<a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
+<a href="<?= BASE_URL ?>/owner/availability" class="nav-item">Availability</a>
+<a href="<?= BASE_URL ?>/owner/bookings" class="nav-item">Bookings</a>
+<a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">Earnings</a>
+<a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">index</a>
+</nav>
+
     </aside>
 
     <main class="main">
@@ -355,7 +357,7 @@
 
                 <div class="notification-box">
                     <button id="notificationBell">🔔</button>
-                    <span id="notificationCount">3</span>
+<span id="notificationCount"><?= count($notifications ?? []) ?></span>
                 </div>
 
                 <div class="dropdown">
@@ -372,17 +374,17 @@
         <section class="stats">
             <article>
                 <h3>Total Revenue</h3>
-                <p id="revenue" data-target="42904">0</p>
+                <p id="revenue" data-target="<?= $totalRevenue ?>">0</p>
             </article>
 
             <article>
                 <h3>Active Spaces</h3>
-                <p id="spaces" data-target="18">0</p>
+                <p id="spaces" data-target="<?= $activeSpaces ?>">0</p>
             </article>
 
             <article>
                 <h3>Pending Payout</h3>
-                <p id="payout" data-target="3240">0</p>
+                <p id="payout" data-target="<?= $pendingPayout ?>">0</p>
             </article>
         </section>
 
@@ -391,27 +393,31 @@
             <p id="tooltip"></p>
 
             <div class="chart-bars">
-                <div class="bar" data-value="$8,500">Mon</div>
-                <div class="bar" data-value="$9,200">Tue</div>
-                <div class="bar" data-value="$10,100">Wed</div>
-                <div class="bar" data-value="$12,400">Thu</div>
-                <div class="bar" data-value="$9,800">Fri</div>
-                <div class="bar" data-value="$7,500">Sat</div>
-                <div class="bar" data-value="$6,900">Sun</div>
+  <?php
+    $days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    foreach ($weeklyRevenue as $index => $value):
+        $height = max(40, $value / 5);
+    ?>
+        <div
+            class="bar"
+            style="height: <?= $height ?>px"
+            data-value="$<?= $value ?>"
+        >
+            <?= $days[$index] ?>
+        </div>
+    <?php endforeach; ?>
             </div>
         </section>
     </main>
 
     <script>
         const navItems = document.querySelectorAll(".nav-item");
-        const currentPage = window.location.pathname.split("/").pop();
-
-        navItems.forEach(item => {
-            if (item.getAttribute("href") === currentPage) {
-                item.classList.add("active");
-            }
-        });
-
+       navItems.forEach(item => {
+    if (window.location.href.includes(item.getAttribute("href"))) {
+        item.classList.add("active");
+    }
+});
         document.getElementById("dropdownButton").onclick = () => {
             document.getElementById("dropdownMenu").classList.toggle("show");
         };
