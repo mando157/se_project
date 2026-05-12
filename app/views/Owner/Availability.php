@@ -6,262 +6,312 @@
     <title>Parking Dashboard</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+:root {
+    --bg-color: #0a0a12;
+    --sidebar-color: #11111a;
+    --card-color: #191925;
+    --primary-color: #8b7bff;
+    --text-color: #ffffff;
+    --secondary-text: #8d8d99;
+    --border-color: #2b2b38;
+}
 
-        :root {
-            --bg-color: #0a0a12;
-            --sidebar-color: #11111a;
-            --card-color: #191925;
-            --primary-color: #8b7bff;
-            --text-color: #ffffff;
-            --secondary-text: #8d8d99;
-            --border-color: #2b2b38;
-        }
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
+.dashboard {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    min-height: 100vh;
+}
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr 300px;
-            min-height: 100vh;
-        }
+/* ================= SIDEBAR UPDATED ================= */
+.sidebar {
+    background: #0f172a;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    padding: 25px 18px;
 
-        .sidebar {
-            background-color: var(--sidebar-color);
-            padding: 25px;
-            border-right: 1px solid var(--border-color);
-        }
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
-        .main-content {
-            padding: 30px;
-        }
+.logo-section {
+    margin-bottom: 40px;
+}
 
-        .right-panel {
-            padding: 25px;
-            border-left: 1px solid var(--border-color);
-        }
+.logo-section h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 5px;
+}
 
-        .logo-section h2 {
-            font-size: 24px;
-            margin-bottom: 6px;
-        }
+.logo-section p {
+    color: #94a3b8;
+    font-size: 13px;
+}
 
-        .logo-section p {
-            color: var(--secondary-text);
-            font-size: 12px;
-            margin-bottom: 40px;
-        }
+.sidebar-nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-        .sidebar-nav ul {
-            list-style: none;
-        }
+.sidebar-nav .nav-item {
+    display: flex;
+    align-items: center;
 
-        .sidebar-nav li {
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            color: var(--secondary-text);
-        }
+    padding: 14px 16px;
+    border-radius: 14px;
 
-        .sidebar-nav .active {
-            background: rgba(139, 123, 255, 0.15);
-            color: var(--primary-color);
-        }
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
 
-        .add-space-btn,
-        .release-btn,
-        .bulk-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 12px;
-            font-weight: bold;
-        }
+    transition: all 0.3s ease;
+}
 
-        .add-space-btn {
-            margin-top: 40px;
-            width: 100%;
-            padding: 14px;
-        }
+.sidebar-nav .nav-item:hover {
+    background: rgba(139, 123, 255, 0.12);
+    color: #fff;
+    transform: translateX(4px);
+}
 
-        .release-btn {
-            padding: 14px 18px;
-        }
+.sidebar-nav .nav-item.active {
+    background: linear-gradient(
+        90deg,
+        rgba(139,123,255,0.25),
+        rgba(139,123,255,0.08)
+    );
 
-        .bulk-btn {
-            margin-top: 25px;
-            width: 100%;
-            padding: 16px;
-        }
+    color: #8b7bff;
 
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+    border: 1px solid rgba(139,123,255,0.2);
 
-        .topbar input {
-            flex: 1;
-            padding: 14px 18px;
-            background: var(--card-color);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: white;
-        }
+    box-shadow: 0 0 20px rgba(139,123,255,0.12);
+}
 
-        .top-links {
-            display: flex;
-            gap: 20px;
-        }
+.add-space-btn,
+.release-btn,
+.bulk-btn {
+    background: linear-gradient(
+        135deg,
+        #8b7bff,
+        #6d5dfc
+    );
 
-        .top-links a {
-            color: var(--secondary-text);
-            text-decoration: none;
-        }
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 14px;
+    font-weight: 600;
 
-        .section-header h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
+    transition: 0.3s ease;
+}
 
-        .section-header p {
-            color: var(--secondary-text);
-            margin-bottom: 30px;
-        }
+.add-space-btn:hover,
+.release-btn:hover,
+.bulk-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139,123,255,0.3);
+}
 
-        .grid-container,
-        .card,
-        .quick-actions,
-        .active-space-card,
-        .chart-card {
-            background: var(--card-color);
-            padding: 20px;
-            border-radius: 18px;
-        }
+.add-space-btn {
+    margin-top: 40px;
+    width: 100%;
+    padding: 14px;
+}
 
-        .stats-cards {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+.release-btn {
+    padding: 14px 18px;
+}
 
-        .card h3 {
-            margin-top: 10px;
-            font-size: 28px;
-        }
+.bulk-btn {
+    margin-top: 25px;
+    width: 100%;
+    padding: 16px;
+}
+/* ================= END SIDEBAR ================= */
 
-        .grid-topbar,
-        .view-modes {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+.main-content {
+    padding: 30px 30px 30px 10px;
+}
 
-        .view-modes button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background: #111;
-            color: white;
-        }
+.right-panel {
+    padding: 25px;
+    border-left: 1px solid var(--border-color);
+}
 
-        .active-mode {
-            background: var(--primary-color);
-        }
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
 
-        .table-row {
-            display: grid;
-            grid-template-columns: 120px repeat(7, 1fr);
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+.topbar input {
+    flex: 1;
+    padding: 14px 18px;
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: white;
+}
 
-        .table-header {
-            color: var(--secondary-text);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
+.top-links {
+    display: flex;
+    gap: 20px;
+}
 
-        .slot {
-            height: 45px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-        }
+.top-links a {
+    color: var(--secondary-text);
+    text-decoration: none;
+}
 
-        .slot.active {
-            background: rgba(139, 123, 255, 0.18);
-            border-color: var(--primary-color);
-        }
+.section-header h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
 
-        .slot.booked {
-            background: rgba(0, 200, 255, 0.15);
-        }
+.section-header p {
+    color: var(--secondary-text);
+    margin-bottom: 30px;
+}
 
-        .slot.blocked {
-            background: rgba(255, 255, 255, 0.05);
-        }
+.grid-container,
+.card,
+.quick-actions,
+.active-space-card,
+.chart-card {
+    background: var(--card-color);
+    padding: 20px;
+    border-radius: 18px;
+}
 
-        .toggle-item {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
+.stats-cards {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
 
-        .space-image {
-            margin-top: 20px;
-            height: 160px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #2a2a38, #171720);
-        }
+.card h3 {
+    margin-top: 10px;
+    font-size: 28px;
+}
 
-        .chart-card canvas {
-            margin-top: 20px;
-            width: 100% !important;
-            max-height: 220px;
-        }
+.grid-topbar,
+.view-modes {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
 
-        @media (max-width: 1100px) {
-            .dashboard {
-                grid-template-columns: 220px 1fr;
-            }
+.view-modes button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #111;
+    color: white;
+}
 
-            .right-panel {
-                display: none;
-            }
-        }
+.active-mode {
+    background: var(--primary-color);
+}
 
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+.table-row {
+    display: grid;
+    grid-template-columns: 120px repeat(7, 1fr);
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
 
-            .sidebar {
-                display: none;
-            }
+.table-header {
+    color: var(--secondary-text);
+    font-size: 13px;
+    margin-bottom: 20px;
+}
 
-            .topbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-        }
-    </style>
+.slot {
+    height: 45px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+.slot.active {
+    background: rgba(139, 123, 255, 0.18);
+    border-color: var(--primary-color);
+}
+
+.slot.booked {
+    background: rgba(0, 200, 255, 0.15);
+}
+
+.slot.blocked {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.space-image {
+    margin-top: 20px;
+    height: 160px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2a2a38, #171720);
+}
+
+.chart-card canvas {
+    margin-top: 20px;
+    width: 100% !important;
+    max-height: 220px;
+}
+
+@media (max-width: 1100px) {
+    .dashboard {
+        grid-template-columns: 220px 1fr;
+    }
+
+    .right-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+
 </head>
 <body>
 
@@ -274,10 +324,9 @@
 
         <nav class="sidebar-nav">
             <ul>
-            <a href="<?= BASE_URL ?>/owner/dashboard" class="nav-item">Dashboard</a>
-                <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
+            <a href="<?= BASE_URL ?>/owner/index" class="nav-item">index</a>
+                <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">Spaces</a>
                 <a href="<?= BASE_URL ?>/owner/availability" class="nav-item <?= basename($_SERVER['REQUEST_URI']) == 'availability' ? 'active' : '' ?>">Availability</a>
-                <a href="<?= BASE_URL ?>/owner/bookings" class="nav-item">Bookings</a>
                 <a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">Earnings</a>
             </ul>
         </nav>
