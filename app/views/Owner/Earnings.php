@@ -327,12 +327,11 @@
         </header>
 
         <nav class="sidebar__nav">
-            <a href="<?= BASE_URL ?>/owner/dashboard" class="nav-item">Dashboard</a>
+           
 <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
 <a href="<?= BASE_URL ?>/owner/availability" class="nav-item">Availability</a>
-<a href="<?= BASE_URL ?>/owner/bookings" class="nav-item">Bookings</a>
 <a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">earnings</a>
-<a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">index</a>
+<a href="<?= BASE_URL ?>/owner/index" class="nav-item">index</a>
 </nav>
 
     </aside>
@@ -384,7 +383,7 @@
 
             <article>
                 <h3>Pending Payout</h3>
-                <p id="payout" data-target="<?= $pendingPayout ?>">0</p>
+                <p id="payout" data-target=>0</p>
             </article>
         </section>
 

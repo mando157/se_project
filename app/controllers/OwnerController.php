@@ -16,30 +16,22 @@ class OwnerController extends Controller
         $this->conn = $database->getConnection();
     }
 
-        public function index()
-    {
-        $user = Auth::user();
-
-        $this->view("Owner/index", [
-            'user' => $user
-        ]);
-    }
-
+       
     private function getOwnerId()
     {
         $user = Auth::user();
         return $user['id'];
     }
     
-    public function dashboard()
+public function index()
 {
     $ownerId = $this->getOwnerId();
 
-    echo "<!-- Owner ID: " . $ownerId . " -->";
+    $data = $this->buildIndexData($ownerId);
 
-    $data = $this->buildDashboardData($ownerId);
+    $data['user'] = Auth::user();
 
-    $this->view("Owner/dashboard", $data);
+    $this->view("Owner/index", $data);
 }
     
     
@@ -55,7 +47,6 @@ class OwnerController extends Controller
                   FROM bookings b
                   INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                   WHERE ps.owner_id = ? 
-                    AND b.status IN ('active', 'completed')
                     AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
         
         $stmt = $this->conn->prepare($query);
@@ -70,8 +61,7 @@ private function getRevenue($ownerId)
     $query = "SELECT COALESCE(SUM(b.total_cost),0) as total
               FROM bookings b
               INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-              WHERE ps.owner_id = ?
-              AND b.status IN ('active','completed')";
+              WHERE ps.owner_id = ?";
 
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("i", $ownerId);
@@ -83,6 +73,34 @@ private function getRevenue($ownerId)
     {
             return $this->getBookingsCountByStatus($ownerId, 'active');
     }
+    private function getTotalBookingsCount($ownerId)
+{
+    $query = "
+        SELECT COUNT(*) as count
+        FROM bookings b
+        INNER JOIN parking_spots ps
+            ON b.spot_id = ps.spot_id
+        WHERE ps.owner_id = ?
+    ";
+
+    $stmt = $this->conn->prepare($query);
+
+    if (!$stmt) {
+        return 0;
+    }
+
+    $stmt->bind_param("i", $ownerId);
+
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $row = $result->fetch_assoc();
+
+    $stmt->close();
+
+    return (int)($row['count'] ?? 0);
+}
     
    private function getPendingBookingsCount($ownerId)
 {
@@ -138,15 +156,25 @@ private function getRevenue($ownerId)
         return (int)($row['total'] ?? 0);
     }
     
-private function getOccupiedSlots($ownerId)
+private function getOccupancyRate($ownerId)
 {
     $query = "
-        SELECT COUNT(*) as occupied
+        SELECT 
+            COUNT(*) as total_slots,
+
+            SUM(
+                CASE 
+                    WHEN s.status = 'booked' THEN 1
+                    ELSE 0
+                END
+            ) as occupied_slots
+
         FROM slots s
+
         INNER JOIN parking_spots ps
-        ON s.spot_id = ps.spot_id
+            ON s.spot_id = ps.spot_id
+
         WHERE ps.owner_id = ?
-        AND s.status = 'booked'
     ";
 
     $stmt = $this->conn->prepare($query);
@@ -163,7 +191,15 @@ private function getOccupiedSlots($ownerId)
 
     $row = $result->fetch_assoc();
 
-    return (int) ($row['occupied'] ?? 0);
+    $totalSlots = (int)($row['total_slots'] ?? 0);
+
+    $occupiedSlots = (int)($row['occupied_slots'] ?? 0);
+
+    if ($totalSlots <= 0) {
+        return 0;
+    }
+
+    return round(($occupiedSlots / $totalSlots) * 100, 1);
 }
 public function addSpace()
 {
@@ -253,12 +289,7 @@ public function addSpace()
     die("Failed To Add Space");
 }
     
-    private function getOccupancyRate($ownerId)
-    {
-        $totalSlots = $this->getTotalSlots($ownerId);
-        $occupiedSlots = $this->getOccupiedSlots($ownerId);
-        return $totalSlots > 0 ? round(($occupiedSlots / $totalSlots) * 100, 1) : 0;
-    }
+
     
     private function getPreviousOccupancyRate($ownerId)
     {
@@ -311,8 +342,7 @@ public function addSpace()
                       FROM bookings b
                       INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                       WHERE ps.owner_id = ? 
-                        AND b.date = ?
-                        AND b.status IN ('active', 'completed')";
+                        AND b.date = ?";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param("is", $ownerId, $date);
@@ -335,8 +365,7 @@ public function addSpace()
                       FROM bookings b
                       INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                       WHERE ps.owner_id = ? 
-                        AND b.date BETWEEN ? AND ?
-                        AND b.status IN ('active', 'completed')";
+                        AND b.date BETWEEN ? AND ?";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param("iss", $ownerId, $monthStart, $monthEnd);
@@ -394,11 +423,11 @@ public function addSpace()
         if ($oldValue == 0) return $newValue > 0 ? 100 : 0;
         return round((($newValue - $oldValue) / $oldValue) * 100, 1);
     }
-private function buildDashboardData($ownerId)
+private function buildIndexData($ownerId)
 {
     $totalEarnings = $this->getTotalEarnings($ownerId);
     $lastMonthEarnings = $this->getLastMonthEarnings($ownerId);
-
+    $totalBookings = $this->getTotalBookingsCount($ownerId);
     $activeBookings = $this->getActiveBookingsCount($ownerId);
     $pendingBookings = $this->getPendingBookingsCount($ownerId);
 
@@ -411,7 +440,7 @@ private function buildDashboardData($ownerId)
 
         'activeBookings' => $activeBookings,
         'pendingBookings' => $pendingBookings,
-
+        'totalBookings' => $totalBookings,
         'occupancyRate' => $occupancyRate,
 
         'peakHour' => $this->getPeakHour($ownerId),
@@ -440,11 +469,11 @@ private function buildDashboardData($ownerId)
         )
     ];
 }
-    public function getDashboardData()
+    public function getIndexData()
 {
     $ownerId = $this->getOwnerId();
 
-    $data = $this->buildDashboardData($ownerId);
+    $data = $this->buildIndexData($ownerId);
 
     $data['success'] = true;
 
@@ -471,7 +500,6 @@ public function earnings()
 
     $totalRevenue = $this->getTotalRevenue($ownerId);
     $activeSpaces = $this->getActiveSpacesCount($ownerId);
-    $pendingPayout = $this->getPendingPayout($ownerId);
     $weeklyRevenue = $this->getWeeklyRevenue($ownerId);
     $notifications = $this->getNotifications($ownerId);
 
@@ -479,7 +507,6 @@ public function earnings()
     $this->view("Owner/earnings", [
         'totalRevenue'   => $totalRevenue,
         'activeSpaces'   => $activeSpaces,
-        'pendingPayout'  => $pendingPayout,
         'weeklyRevenue'  => $weeklyRevenue, 
         'notifications'  => $notifications
     ]);
@@ -489,9 +516,30 @@ public function earnings()
 // ========================= TOTAL REVENUE =========================
 private function getTotalRevenue($ownerId)
 {
-    return $this->getRevenue($ownerId);
-}
+    $query = "
+        SELECT COALESCE(SUM(b.total_cost), 0) AS totalRevenue
+        FROM bookings b
+        INNER JOIN parking_spots ps
+            ON b.spot_id = ps.spot_id
+        WHERE ps.owner_id = ?
+    ";
 
+    $stmt = $this->conn->prepare($query);
+
+    if (!$stmt) {
+        return 0;
+    }
+
+    $stmt->bind_param("i", $ownerId);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    $stmt->close();
+
+    return (float)($row['totalRevenue'] ?? 0);
+}
 // ========================= ACTIVE SPACES =========================
 private function getActiveSpacesCount($ownerId)
 {
@@ -517,32 +565,6 @@ private function getActiveSpacesCount($ownerId)
     return (int)($row['count'] ?? 0);
 }
 
-
-// ========================= PENDING PAYOUT =========================
-private function getPendingPayout($ownerId)
-{
-    $query = "SELECT COALESCE(SUM(b.total_cost), 0) AS total
-              FROM bookings b
-              INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-              WHERE ps.owner_id = ?
-              AND b.status = 'pending'";
-
-    $stmt = $this->conn->prepare($query);
-
-    if (!$stmt) {
-        return 0;
-    }
-
-    $stmt->bind_param("i", $ownerId);
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
-
-    $stmt->close();
-
-    return (float)($row['total'] ?? 0);
-}
 
 
 
