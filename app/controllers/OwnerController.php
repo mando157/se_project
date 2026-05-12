@@ -55,7 +55,6 @@ class OwnerController extends Controller
                   FROM bookings b
                   INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                   WHERE ps.owner_id = ? 
-                    AND b.status IN ('active', 'completed')
                     AND b.created_at BETWEEN DATE_SUB(NOW(), INTERVAL 2 MONTH) AND DATE_SUB(NOW(), INTERVAL 1 MONTH)";
         
         $stmt = $this->conn->prepare($query);
@@ -70,8 +69,7 @@ private function getRevenue($ownerId)
     $query = "SELECT COALESCE(SUM(b.total_cost),0) as total
               FROM bookings b
               INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
-              WHERE ps.owner_id = ?
-              AND b.status IN ('active','completed')";
+              WHERE ps.owner_id = ?";
 
     $stmt = $this->conn->prepare($query);
     $stmt->bind_param("i", $ownerId);
@@ -311,8 +309,7 @@ public function addSpace()
                       FROM bookings b
                       INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                       WHERE ps.owner_id = ? 
-                        AND b.date = ?
-                        AND b.status IN ('active', 'completed')";
+                        AND b.date = ?";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param("is", $ownerId, $date);
@@ -335,8 +332,7 @@ public function addSpace()
                       FROM bookings b
                       INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
                       WHERE ps.owner_id = ? 
-                        AND b.date BETWEEN ? AND ?
-                        AND b.status IN ('active', 'completed')";
+                        AND b.date BETWEEN ? AND ?";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bind_param("iss", $ownerId, $monthStart, $monthEnd);
@@ -683,7 +679,6 @@ private function getAvailabilityChartData($ownerId)
             INNER JOIN parking_spots ps ON b.spot_id = ps.spot_id
             WHERE ps.owner_id = ?
             AND b.date = ?
-            AND b.status = 'active'
         ";
 
         $stmt = $this->conn->prepare($query);
