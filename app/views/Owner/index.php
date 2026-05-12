@@ -256,6 +256,9 @@
     <a href="<?= BASE_URL ?>/owner/earnings">
         <i class="fa-solid fa-dollar-sign"></i> Earnings
     </a>
+    <a href="<?= BASE_URL ?>Auth/logout" class="logout-btn">Logout
+    <i class="fa-solid fa-right-from-bracket"></i>
+    </a>
 
     <div class="sidebar-actions">
         <button class="add-space-btn" onclick="openModal()">

@@ -8,6 +8,15 @@
     <title>Urban kinetic</title>
 </head>
 <body>
+<?php
+$totalRevenue = (float)($totalRevenue ?? 0);
+$monthlyRevenue = $monthlyRevenue ?? [];
+$topOwners = $topOwners ?? [];
+$recentCompletedBookings = $recentCompletedBookings ?? [];
+$latestMonthTotal = !empty($monthlyRevenue) ? (float)$monthlyRevenue[count($monthlyRevenue) - 1]['total'] : 0;
+$prevMonthTotal = count($monthlyRevenue) > 1 ? (float)$monthlyRevenue[count($monthlyRevenue) - 2]['total'] : 0;
+$monthlyChange = $prevMonthTotal > 0 ? round((($latestMonthTotal - $prevMonthTotal) / $prevMonthTotal) * 100, 1) : ($latestMonthTotal > 0 ? 100 : 0);
+?>
 <div class="container">
     <div class="sidebar">
 <div>
@@ -40,28 +49,64 @@
 
 <div class="card big-card">
 <h4>TOTAL NETWORK REVENUE</h4>
-<h2>$142,840.50</h2>
-<span class="badge">+12.4% vs last month</span>
+<h2>$<?= number_format($totalRevenue, 2) ?></h2>
+<span class="badge"><?= $monthlyChange >= 0 ? '+' : '' ?><?= $monthlyChange ?>% vs last month</span>
 </div>
 
 <div class="sector">
 <div class="overlay">
-<h2>Sector 7 Central</h2>
-<p>System-optimized dynamic pricing is currently yielding peak efficiency across all 600 nodes in this sector.</p>
+<h2>Top Owners</h2>
+<p><?= count($topOwners) ?> owner(s) contributing highest revenue right now.</p>
 </div>
 </div>
 
 </div>
 
-<h2 class="section-title">Real-time Bookings</h2>
+<h2 class="section-title">Recent Completed Bookings</h2>
 
 <table>
     <tr>
         <th>User</th>
-        <th>Location</th>
+        <th>Spot</th>
+        <th>Date</th>
         <th>Rent</th>
     </tr>
+    <?php if (!empty($recentCompletedBookings)): ?>
+    <?php foreach ($recentCompletedBookings as $row): ?>
+    <tr>
+        <td><?= htmlspecialchars($row['fullName'] ?? '-') ?></td>
+        <td><?= htmlspecialchars($row['spot_name'] ?? '-') ?></td>
+        <td><?= htmlspecialchars($row['date'] ?? '-') ?></td>
+        <td>$<?= number_format((float)($row['total_cost'] ?? 0), 2) ?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="4">No completed bookings found.</td>
+    </tr>
+    <?php endif; ?>
+</table>
 
+<h2 class="section-title" style="margin-top:24px;">Top Owners By Revenue</h2>
+<table>
+    <tr>
+        <th>Owner</th>
+        <th>Email</th>
+        <th>Revenue</th>
+    </tr>
+    <?php if (!empty($topOwners)): ?>
+    <?php foreach ($topOwners as $owner): ?>
+    <tr>
+        <td><?= htmlspecialchars($owner['fullName'] ?? '-') ?></td>
+        <td><?= htmlspecialchars($owner['email'] ?? '-') ?></td>
+        <td>$<?= number_format((float)($owner['revenue'] ?? 0), 2) ?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php else: ?>
+    <tr>
+        <td colspan="3">No owners found.</td>
+    </tr>
+    <?php endif; ?>
 </table>
 
 

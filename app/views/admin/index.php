@@ -9,6 +9,18 @@
 </head>
 
 <body>
+<?php
+$stats = $stats ?? [];
+$recentBookings = $recentBookings ?? [];
+$totalRevenue = (float)($stats['totalRevenue'] ?? 0);
+$lastMonthRevenue = (float)($stats['lastMonthRevenue'] ?? 0);
+$activeBookings = (int)($stats['activeBookings'] ?? 0);
+$totalSlots = (int)($stats['totalSlots'] ?? 0);
+$utilization = $totalSlots > 0 ? round(($activeBookings / $totalSlots) * 100, 1) : 0;
+$revenueChange = $lastMonthRevenue > 0
+    ? round((($totalRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1)
+    : ($totalRevenue > 0 ? 100 : 0);
+?>
 
 <div class="container">
 
@@ -43,14 +55,14 @@
 
 <div class="card big-card">
 <h4>TOTAL NETWORK REVENUE</h4>
-<h2>$142,840.50</h2>
-<span class="badge">+12.4% vs last month</span>
+<h2>$<?= number_format($totalRevenue, 2) ?></h2>
+<span class="badge"><?= $revenueChange >= 0 ? '+' : '' ?><?= $revenueChange ?>% vs last month</span>
 </div>
 
 <div class="card small-card">
 <p>ACTIVE SESSIONS</p>
-<h3>1,204</h3>
-<p>UTILIZATION 76%</p>
+<h3><?= $activeBookings ?></h3>
+<p>UTILIZATION <?= $utilization ?>%</p>
 <div class="progress"><span></span></div>
 </div>
 
@@ -66,31 +78,42 @@
 <th>Status</th>
 <th>Fee</th>
 </tr>
-
+<?php if (!empty($recentBookings)): ?>
+<?php foreach ($recentBookings as $booking): ?>
+<?php
+$status = strtolower($booking['status'] ?? 'pending');
+$statusClass = 'reserve';
+if ($status === 'active') {
+    $statusClass = 'active-status';
+} elseif ($status === 'completed') {
+    $statusClass = 'active-status';
+} elseif ($status === 'cancelled') {
+    $statusClass = 'overdue';
+}
+?>
 <tr>
-<td>James Smith</td>
-<td>North Plaza</td>
-<td>3h 20m</td>
-<td><span class="status active-status">ACTIVE</span></td>
-<td>$24.50</td>
+<td><?= htmlspecialchars($booking['fullName'] ?? 'Unknown') ?></td>
+<td><?= htmlspecialchars($booking['location'] ?? '-') ?></td>
+<td><?= number_format((float)($booking['duration'] ?? 0), 1) ?>h</td>
+<td><span class="status <?= $statusClass ?>"><?= strtoupper($status) ?></span></td>
+<td>$<?= number_format((float)($booking['total_cost'] ?? 0), 2) ?></td>
 </tr>
-
+<?php endforeach; ?>
+<?php else: ?>
 <tr>
-<td>Alice Miller</td>
-<td>Underground A14</td>
-<td>1h 45m</td>
-<td><span class="status reserve">RESERVED</span></td>
-<td>$12.00</td>
+<td colspan="5">No bookings found.</td>
 </tr>
-
-<tr>
-<td>Robert Kane</td>
-<td>Downtown Garage</td>
-<td>45m</td>
-<td><span class="status overdue">OVERDUE</span></td>
-<td>$35.00</td>
-</tr>
+<?php endif; ?>
 </table>
+
+<div style="margin-top: 16px; color: #c9d5ff;">
+<small>
+Owners: <?= (int)($stats['activeOwners'] ?? 0) ?> |
+Drivers: <?= (int)($stats['activeDrivers'] ?? 0) ?> |
+Spots: <?= (int)($stats['totalSpots'] ?? 0) ?> |
+Slots: <?= (int)($stats['totalSlots'] ?? 0) ?>
+</small>
+</div>
 
 <div class="bottom">
 

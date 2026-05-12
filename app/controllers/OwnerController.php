@@ -10,8 +10,9 @@ class OwnerController extends Controller
     
     public function __construct()
     {
-       
-        
+        Auth::redirectIfNotLogged();
+        Auth::forbidIfNotRole('owner');
+
         $database = Database::getInstance();
         $this->conn = $database->getConnection();
     }
@@ -20,7 +21,7 @@ class OwnerController extends Controller
     private function getOwnerId()
     {
         $user = Auth::user();
-        return $user['id'];
+        return (int)($user['id'] ?? 0);
     }
     
 public function index()
@@ -204,23 +205,37 @@ private function getOccupancyRate($ownerId)
 public function addSpace()
 {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        die("Invalid Request");
+        $this->jsonResponse([
+            'success' => false,
+            'message' => 'Invalid request method.'
+        ]);
     }
 
     $ownerId = $this->getOwnerId();
+    if ($ownerId <= 0) {
+        $this->jsonResponse([
+            'success' => false,
+            'message' => 'Unauthorized owner.'
+        ]);
+    }
 
     $location = trim($_POST['location'] ?? '');
 
     $price = (float) ($_POST['price_per_hour'] ?? 0);
 
     $totalSlots = (int) ($_POST['total_slots'] ?? 1);
+    $instantActivation = (int)($_POST['instant_activation'] ?? 1);
+    $status = $instantActivation === 1 ? 'active' : 'inactive';
 
     if (
         empty($location) ||
         $price <= 0 ||
         $totalSlots <= 0
     ) {
-        die("Please fill all fields correctly");
+        $this->jsonResponse([
+            'success' => false,
+            'message' => 'Please fill all fields correctly.'
+        ]);
     }
 
     $query = "
@@ -235,58 +250,83 @@ public function addSpace()
         )
         VALUES
         (
-            ?, ?, ?, ?, ?, 'active'
+            ?, ?, ?, ?, ?, ?
         )
     ";
 
     $stmt = $this->conn->prepare($query);
-
-    $stmt->bind_param(
-        "issdi",
-        $ownerId,
-        $location,
-        $location,
-        $price,
-        $totalSlots
-    );
-
-    if ($stmt->execute()) {
-
-        $spotId = $this->conn->insert_id;
-
-        for ($i = 1; $i <= $totalSlots; $i++) {
-
-            $slotName = 'A' . $i;
-
-            $slotQuery = "
-                INSERT INTO slots
-                (
-                    spot_id,
-                    slot_name,
-                    status
-                )
-                VALUES
-                (
-                    ?, ?, 'active'
-                )
-            ";
-
-            $slotStmt = $this->conn->prepare($slotQuery);
-
-            $slotStmt->bind_param(
-                "is",
-                $spotId,
-                $slotName
-            );
-
-            $slotStmt->execute();
-        }
-
-        header("Location: " . BASE_URL . "owner/index");
-        exit;
+    if (!$stmt) {
+        $this->jsonResponse([
+            'success' => false,
+            'message' => 'Failed to prepare parking space query.'
+        ]);
     }
 
-    die("Failed To Add Space");
+    $spotName = $location;
+
+    $stmt->bind_param(
+        "issdis",
+        $ownerId,
+        $spotName,
+        $location,
+        $price,
+        $totalSlots,
+        $status
+    );
+
+    $this->conn->begin_transaction();
+    try {
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to create parking space.");
+        }
+
+        $spotId = $this->conn->insert_id;
+        $slotStatus = $status === 'active' ? 'active' : 'blocked';
+
+        $slotQuery = "
+            INSERT INTO slots
+            (
+                spot_id,
+                slot_name,
+                status
+            )
+            VALUES
+            (
+                ?, ?, ?
+            )
+        ";
+
+        $slotStmt = $this->conn->prepare($slotQuery);
+        if (!$slotStmt) {
+            throw new Exception("Failed to prepare slot query.");
+        }
+
+        for ($i = 1; $i <= $totalSlots; $i++) {
+            $slotName = 'A' . $i;
+            $slotStmt->bind_param(
+                "iss",
+                $spotId,
+                $slotName,
+                $slotStatus
+            );
+
+            if (!$slotStmt->execute()) {
+                throw new Exception("Failed to add parking slots.");
+            }
+        }
+
+        $this->conn->commit();
+        $this->jsonResponse([
+            'success' => true,
+            'message' => 'Space added successfully.'
+        ]);
+    } catch (Exception $e) {
+        $this->conn->rollback();
+        $this->jsonResponse([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
 }
     
 
