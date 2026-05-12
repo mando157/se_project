@@ -5,6 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Urban Kinetic Dashboard</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/all.min.css">
+
 
     <style>
         :root {
@@ -327,12 +329,12 @@
         </header>
 
         <nav class="sidebar__nav">
-           
-<a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
-<a href="<?= BASE_URL ?>/owner/availability" class="nav-item">Availability</a>
-<a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">earnings</a>
-<a href="<?= BASE_URL ?>/owner/index" class="nav-item">index</a>
-</nav>
+
+            <a href="<?= BASE_URL ?>/owner/index" class="nav-item">Dashboard</a>
+            <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">My Spaces</a>
+            <a href="<?= BASE_URL ?>/owner/availability" class="nav-item">Availability</a>
+            <a href="<?= BASE_URL ?>/owner/earnings" class="nav-item">earnings</a>
+        </nav>
 
     </aside>
 
@@ -355,8 +357,10 @@
                 </nav>
 
                 <div class="notification-box">
-                    <button id="notificationBell">🔔</button>
-<span id="notificationCount"><?= count($notifications ?? []) ?></span>
+                    <button id="notificationBell">
+                        <i class="fa-solid fa-bell"></i>
+                    </button>
+                    <span id="notificationCount"><?= count($notifications ?? []) ?></span>
                 </div>
 
                 <div class="dropdown">
@@ -392,31 +396,27 @@
             <p id="tooltip"></p>
 
             <div class="chart-bars">
-  <?php
-    $days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                <?php
+                $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-    foreach ($weeklyRevenue as $index => $value):
-        $height = max(40, $value / 5);
-    ?>
-        <div
-            class="bar"
-            style="height: <?= $height ?>px"
-            data-value="$<?= $value ?>"
-        >
-            <?= $days[$index] ?>
-        </div>
-    <?php endforeach; ?>
+                foreach ($weeklyRevenue as $index => $value):
+                    $height = max(40, $value / 5);
+                    ?>
+                    <div class="bar" style="height: <?= $height ?>px" data-value="$<?= $value ?>">
+                        <?= $days[$index] ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </section>
     </main>
 
     <script>
         const navItems = document.querySelectorAll(".nav-item");
-       navItems.forEach(item => {
-    if (window.location.href.includes(item.getAttribute("href"))) {
-        item.classList.add("active");
-    }
-});
+        navItems.forEach(item => {
+            if (window.location.href.includes(item.getAttribute("href"))) {
+                item.classList.add("active");
+            }
+        });
         document.getElementById("dropdownButton").onclick = () => {
             document.getElementById("dropdownMenu").classList.toggle("show");
         };

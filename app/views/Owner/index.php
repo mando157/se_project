@@ -289,7 +289,9 @@
             <div class="card earnings">
                 <div class="card-top">
                     <span class="title">TOTAL EARNINGS</span>
-                    <div class="icon">💵</div>
+                    <div class="icon">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
                 </div>
                 <h2>$<span id="earningsAmount"><?= number_format($totalEarnings ?? 0, 2) ?></span>
                     <span id="earningsChangeSpan" class="<?= ($earningsChange ?? 0) >= 0 ? 'up' : 'down' ?>">
@@ -302,7 +304,9 @@
             <div class="card bookings">
                 <div class="card-top">
                     <span class="title">TOTAL BOOKINGS</span>
-                    <div class="icon">📊</div>
+                    <div class="icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
                 </div>
 <h2><span id="totalBookingsValue"><?= $totalBookings ?? 0 ?></span>                    <span id="bookingsChangeSpan" class="<?= ($bookingsChange ?? 0) >= 0 ? 'up' : 'down' ?>">
                         <?= (($bookingsChange ?? 0) >= 0 ? '+' : '') . ($bookingsChange ?? 0) ?>%
@@ -314,7 +318,9 @@
             <div class="card occupancy">
                 <div class="card-top">
                     <span class="title">OCCUPANCY RATE</span>
-                    <div class="icon">📱</div>
+                    <div class="icon">
+                        <i class="fa-solid fa-chart-simple"></i>
+                    </div>
                 </div>
                 <h2><span id="occupancyValue"><?= $occupancyRate ?? 0 ?></span>%
                     <span id="occupancyChangeSpan" class="<?= ($occupancyChange ?? 0) >= 0 ? 'up' : 'down' ?>">
@@ -353,7 +359,7 @@
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <div class="notif">✨ No new notifications</div>
+                            <div class="notif">No new notifications</div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -363,7 +369,7 @@
 
 
 <div class="table-container">
-    <h5>📋 Recent Bookings</h5>
+    <h5>>Recent Bookings</h5>
     <?php if (!empty($recentBookings)): ?>
         <table class="table table-bordered">
             <thead>
@@ -524,7 +530,6 @@
                 alert('✓ Space added successfully!');
                 closeModal();
                 document.getElementById('addSpaceForm').reset();
-                // تحديث الداشبورد
                 setTimeout(() => location.reload(), 500);
             } else {
                 alert('Error: ' + result.message);

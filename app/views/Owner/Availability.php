@@ -324,7 +324,7 @@ body {
 
         <nav class="sidebar-nav">
             <ul>
-            <a href="<?= BASE_URL ?>/owner/index" class="nav-item">index</a>
+            <a href="<?= BASE_URL ?>/owner/index" class="nav-item">Dashboard</a>
                 <a href="<?= BASE_URL ?>/owner/spaces" class="nav-item">Spaces</a>
                 <a href="<?= BASE_URL ?>/owner/availability" class="nav-item <?= basename($_SERVER['REQUEST_URI']) == 'availability' ? 'active' : '' ?>">Availability</a>
                 <a href="<?= BASE_URL ?>/owner/Earnings" class="nav-item">Earnings</a>
